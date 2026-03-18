@@ -7,7 +7,7 @@ Step-by-step instructions to create your own AI-powered curriculum.
 ## Step 1: Fork or Clone This Repo
 
 ```bash
-git clone https://github.com/[YOUR_USERNAME]/claude-curriculum.git my-learning-project
+git clone https://github.com/[YOUR_USERNAME]/ai-learning-engine.git my-learning-project
 cd my-learning-project
 ```
 

@@ -1,4 +1,4 @@
-# claude-curriculum
+# ai-learning-engine
 
 An open-source, AI-powered structured learning system. Design a curriculum on any topic, then learn it interactively with an AI tutor that tracks your progress, quizzes you with spaced repetition, and never lets you skip ahead.
 
@@ -31,7 +31,7 @@ This repo gives you a **state machine for learning**. You design a curriculum (o
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/claude-curriculum.git my-learning-project
+git clone https://github.com/YOUR_USERNAME/ai-learning-engine.git my-learning-project
 cd my-learning-project
 ```
 
@@ -136,7 +136,7 @@ At the end of Phase 1, 2, and 4, you complete a structured SWOT self-assessment.
 ## Repo Structure
 
 ```
-claude-curriculum/
+ai-learning-engine/
 +-- README.md                      <- You're here
 +-- SETUP-GUIDE.md                 <- Step-by-step setup
 +-- CURRICULUM-TEMPLATE.md         <- Template: design your curriculum
