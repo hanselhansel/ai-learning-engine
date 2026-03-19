@@ -21,7 +21,7 @@ Review conversation history to determine:
 
 ### Completion Check by Mode
 
-Read `references/flex-session-blocks.md` (from the learn skill directory) for block composition.
+Read `references/flex-session-blocks.md` from the same skill directory as the learn skill (i.e., alongside `SKILL.md` in `skills/spatial-ai-learn/references/` or `.claude/skills/learn/references/`).
 
 **Micro** — complete if: SM-2 drill + interleaved Q + velocity check all done
 **Quick** — complete if: SM-2 quiz + interleaved practice + velocity check all done
@@ -80,7 +80,7 @@ Read current state_file, then update:
 
 ## Step 6: Generate Partial Summary Card
 
-Read `templates/session-summary-card.md` (from the learn skill directory).
+Read `templates/session-summary-card.md` from the learn skill directory (`skills/spatial-ai-learn/templates/` or `.claude/skills/learn/templates/`).
 Generate a summary card even for partial sessions. Mark as "PARTIAL" in the card.
 Save to `sessions/summaries/session-XX.md` (use sessions_completed + 1 if partial, since counter didn't advance).
 

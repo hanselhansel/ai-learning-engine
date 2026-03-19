@@ -47,7 +47,7 @@ status = New
 
 ## Sanity Checks (run after every update)
 - ease: MUST be 1.3 ≤ ease ≤ 3.0. If out of range → reset to 2.5
-- interval: MUST be > 0. If zero/negative → reset to 1
+- interval: MUST be >= 0. If negative → reset to 1. (0 is valid for new/unquizzed terms)
 - next_review: MUST be valid session number. If invalid → reset to current_session + 1
 - correct_count: MUST be >= 0
 
