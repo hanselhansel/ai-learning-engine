@@ -1,49 +1,75 @@
-# ai-learning-engine
+# AI Learning Engine v3
 
-An open-source, AI-powered adaptive learning system. Design a curriculum on any topic, then learn it interactively with an AI tutor that uses **evidence-based learning science** to maximize retention and understanding.
+An evidence-based adaptive learning engine for Claude Code. Turn any topic into a structured curriculum with spaced repetition, Socratic teaching, flex sessions, and mastery-based progression.
 
 Works with **Claude Code**, **OpenAI Codex**, **Cursor AI**, or any AI assistant that reads markdown files.
 
 ---
 
-## v2: Evidence-Based Methodology
+## Features (32)
 
-This engine is built on research from 40+ academic sources in cognitive science and learning theory. Key upgrades from v1:
+### Core Engine (11 — from v2)
 
-| Feature | v1 (Old) | v2 (Current) | Research Basis |
-|---------|----------|-------------|----------------|
-| **Pre-session** | Pre-read (passive) | Pre-test (active errors) | Pretesting effect — errors before learning create stronger memory traces |
-| **Teaching** | Explain-then-ask | Socratic (ask-then-reveal) | Generation effect — producing answers before seeing them improves retention 30-50% |
-| **Review** | Simple flashcards (3+ correct = known) | SM-2 spaced repetition with confidence calibration | SM-2 algorithm — adaptive intervals based on ease factor and performance |
-| **Practice** | Single-topic drills | Interleaved practice (mix topics) | Interleaving — mixing related concepts improves transfer and discrimination |
-| **Exercises** | Generic assignments | Portfolio-grade artifacts | Real-world application — contextual learning outperforms abstract exercises |
-| **Advancement** | Fixed daily progression | Mastery-based with escape valve | Mastery learning — progress when you understand, not when the calendar says so |
-| **Concepts** | Unlimited per session | 7-concept cap, multi-session days | Cognitive load theory — fewer concepts with more depth beats more concepts with less |
-| **Metacognition** | Not tracked | Confidence calibration (1-5 per answer) | Calibration training — knowing what you don't know is as valuable as knowing |
-| **Session length** | 3-4 hours | 65-75 minutes | Attention research — shorter, focused sessions outperform long ones |
+1. **Pre-testing** — test before teaching for stronger memory traces
+2. **SM-2 spaced repetition** — algorithmic review scheduling with ease factors
+3. **Socratic method** — ask-then-reveal, never lecture-first
+4. **Interleaved practice** — cross-session concept mixing
+5. **Mastery-based progression** — gates with escape valve (never blocks indefinitely)
+6. **Portfolio-grade exercises** — every drill produces a real artifact
+7. **Confidence calibration** — metacognition tracking (over/under-confident detection)
+8. **7-concept cap** — depth over breadth per session
+9. **Weekly synthesis** — integration challenge every 5th session
+10. **Config-driven** — CURRICULUM-CONFIG.md separates content from engine
+11. **Learning velocity dashboard** — trend tracking across sessions
+
+### Adaptive Features (13 — new in v3)
+
+12. **Flex sessions** — 5 modes: Micro (5m), Quick (15m), Standard (60m), Deep (120m), Synthesis
+13. **Content compression** — skip/compress mastered concepts
+14. **Difficulty scaling** — harder when ahead, easier when struggling
+15. **Velocity-based pacing** — adjust session based on learning speed
+16. **Spaced exercise repetition** — SM-2 for drills, not just terms
+17. **Teach-back mode** — explain to a colleague for 90% retention
+18. **Concept linking** — relationship graph between concepts
+19. **Mid-lesson retrieval** — quick recall prompts during Socratic lessons
+20. **Growth reflection** — revisit Day 1 artifacts to see progress
+21. **Auto-generated sessions** — web research for fresh content
+22. **Warm-start migration** — preserve progress when upgrading
+23. **Curriculum generator** — guided "what do you want to learn?" skill
+24. **Session variety** — debate, case study, deep-dive, reverse quiz
+
+### Engagement Features (8 — new in v3)
+
+25. **Analytics Dashboard** — HTML with Chart.js (mastery curve, velocity, confidence)
+26. **Session Summary Card** — workout-receipt per session
+27. **Peer Teaching Simulation** — skeptical colleague with follow-up questions
+28. **Concept of the Day** — surprise retrieval at session open
+29. **Curriculum Gallery** — pre-built examples (finance, PM, ML, spatial AI)
+30. **Micro-Review Mode** — 5-min coffee-break review
+31. **Mermaid Concept Map** — auto-generated visual knowledge web
+32. **Learning Streak & Milestones** — don't-break-the-chain motivation
 
 ---
 
-## The Problem
+## Architecture: Hub-and-Spoke
 
-Self-directed learning falls apart because:
-- You skip the hard parts and only study what's comfortable
-- You forget 80% of what you read within a week
-- You have no way to measure if you actually understand something
-- You study alone with no feedback loop
-- You never build the muscle of explaining what you learned
+```
+skills/learn/
+├── SKILL.md                    # ~150 lines: session flow PROCESS only
+├── references/
+│   ├── sm2-algorithm.md        # SM-2 rules, ease factor calc, sanity checks
+│   ├── flex-session-blocks.md  # 5 mode definitions, block composition table
+│   ├── compression-logic.md    # Velocity thresholds, compression rules
+│   ├── teach-back-protocol.md  # Peer simulation, scoring rubric
+│   ├── mastery-gates.md        # Gate logic, streaks, milestones
+│   └── concept-linking.md      # Relationship tracking, Mermaid generation
+└── templates/
+    ├── session-summary-card.md # Receipt-style session summary
+    ├── analytics-dashboard.html# Chart.js dashboard
+    └── session-state-schema.md # v3 state field definitions
+```
 
-## The Solution
-
-This repo gives you a **state machine for learning**. You design a curriculum (or use an example), and your AI tutor:
-
-1. **Pre-tests** you on material you haven't learned yet. Getting wrong answers primes your brain for deeper learning.
-2. **Quizzes you** using SM-2 spaced repetition. Weak terms surface more often with algorithmically optimal intervals.
-3. **Teaches Socratically** — asks you to reason about concepts before revealing answers. You learn by generating, not reading.
-4. **Mixes concepts** across sessions. Today's practice includes problems from last week, forcing transfer and connection.
-5. **Produces portfolio artifacts** — every exercise creates something real (LinkedIn posts, pitch slides, analysis memos).
-6. **Gates progression** on mastery, not time. Below threshold? Targeted remediation. Fail twice? Advance with a flag (never blocks indefinitely).
-7. **Tracks everything** in plain markdown. Your git history becomes a portfolio of consistent learning.
+SKILL.md says "Read `references/sm2-algorithm.md` for update rules" — Claude loads on demand. Quick/Micro modes never load teach-back or concept-linking files. This saves ~40% tokens vs monolithic skills.
 
 ---
 
@@ -54,30 +80,32 @@ git clone https://github.com/hanselhansel/ai-learning-engine.git my-learning-pro
 cd my-learning-project
 ```
 
-1. Copy `CURRICULUM-TEMPLATE.md` → `CURRICULUM.md` and fill in your topic
-2. Copy `CURRICULUM-CONFIG-TEMPLATE.md` → `CURRICULUM-CONFIG.md` and customize
-3. Update `SESSION-STATE.md` with your topic name and target sessions
-4. Install the skills for your platform (see [Platform Setup](#platform-setup))
-5. Type **"let's learn"** in your AI assistant
+1. **Generate a curriculum**: Run `/generate-curriculum` and answer 5 questions
+   - OR copy an example from `examples/` and customize
+2. **Configure**: Copy `CURRICULUM-CONFIG-TEMPLATE.md` to `CURRICULUM-CONFIG.md` and fill in your learner bridges and preferences
+3. **Install skills**: Follow your platform's setup guide (see [Platform Setup](#platform-setup))
+4. **Start learning**: Type `/learn`
+5. **End early**: Type `/learn-end` (saves partial progress)
 
 See `SETUP-GUIDE.md` for the full walkthrough.
 
 ---
 
-## How a Session Works (~65-75 min)
+## How a Session Works
 
 ```
-You: "let's learn"
+You: /learn
 
 AI: [reads CURRICULUM-CONFIG.md → SESSION-STATE.md → CURRICULUM.md]
+AI: "What mode? Micro (5m) | Quick (15m) | Standard (60m) | Deep (120m)"
+You: Standard
 
-=== Session 7 of ~65: How Robots See (Perception) ===
+=== Session 12 of ~50: How Robots See (Perception) ===
 
-Flags from last session:
-- You mixed up "perception" and "planning" again. Perception = sensing ONLY.
+--- CONCEPT OF THE DAY ---
+Quick recall: What's the difference between a world model and a scene graph?
 
 --- PRE-TEST (5 min) ---
-Before we start today's lesson, let me see what you already know...
 Q1: What does a LiDAR sensor measure?
 You: [attempt — probably wrong, and that's good]
 "We'll come back to this during the lesson."
@@ -89,7 +117,7 @@ Confidence (1-5): 4
 Result: Correct. Ease: 2.7 → 2.8. Next review: 8 days.
 
 --- SOCRATIC LESSON (25-30 min, max 7 concepts) ---
-"How would your 16 Claude agents 'see' a physical room?"
+"How would a robot 'see' a cluttered kitchen counter?"
 You: [reason about it]
 "Good — you got the sensor fusion part right. What you missed is..."
 [Connects to your pre-test answer]
@@ -102,86 +130,92 @@ Problem mixing today's Perception with last week's VLA architecture...
 [Saved to portfolio/]
 
 --- MASTERY CHECK ---
-Score: 7.5/10. Above threshold. Advancing to Session 8.
+Score: 7.5/10. Above threshold. Advancing to Session 13.
 
---- SESSION COMPLETE ---
+--- SESSION SUMMARY CARD ---
+┌─────────────────────────────────┐
+│  Session 12 Complete            │
+│  Mode: Standard (58 min)        │
+│  New concepts: 5/7              │
+│  SM-2 reviews: 8 (6 correct)    │
+│  Streak: 4 days                 │
+│  Velocity: 1.2x (above avg)    │
+└─────────────────────────────────┘
+
 [Updates SM-2 tracker, velocity dashboard, commits to git]
 ```
 
 ---
 
-## The Methodology
+## Flex Session Modes
 
-### Session Flow
+| Mode | Time | Best For |
+|------|------|----------|
+| **Micro** | 5 min | Coffee break, quick SM-2 review |
+| **Quick** | 15-20 min | Morning warmup, light practice |
+| **Standard** | 50-65 min | Full learning cycle (default) |
+| **Deep Dive** | 90-120+ min | Teach-back, concept linking, deep exploration |
+| **Synthesis** | 60-75 min | Every 5th session, integration challenge |
 
-| Block | Duration | What |
-|-------|----------|------|
-| **Pre-Test** | 5 min | 3-5 questions on NEW material. Errors prime the brain. |
-| **SR Quiz** | 10 min | SM-2 selects terms for review. Confidence calibration. |
-| **Socratic Lesson** | 25-30 min | Ask-then-reveal. Max 7 concepts. Bridge to existing knowledge. |
-| **Interleaved Practice** | 10 min | 3 problems mixing today's + previous sessions' concepts. |
-| **Portfolio Exercise** | 10-15 min | Real artifact (LinkedIn post, pitch slides, memo). |
-| **Community** | 5 min | Lurk → Engage → Contribute progression. |
-| **Mastery Check** | 5 min | Gate with escape valve. Never blocks indefinitely. |
+### Block Composition by Mode
 
-### SM-2 Spaced Repetition
-
-Every term is tracked with the SM-2 algorithm:
-
-| Term | Correct | Interval | Next Review | Ease | Confidence | Status |
-|------|---------|----------|-------------|------|------------|--------|
-| World Model | 3 | 8 days | 2026-04-01 | 2.8 | Calibrated | Known |
-| DoF | 1 | 1 day | 2026-03-25 | 2.3 | Overconfident | Learning |
-| NeRF | 0 | 1 day | 2026-03-24 | 2.5 | - | New |
-
-- **Correct**: ease goes up, interval grows → reviewed less often
-- **Wrong**: ease goes down, interval resets to 1 → reviewed tomorrow
-- **Confidence calibration**: flags blind spots (high confidence + wrong answer)
-
-### Phase Gates
-
-| Gate | Format | Threshold |
-|------|--------|-----------|
-| Phase 1 | Term quiz + verbal explanation | Per config (default 6/10) |
-| Phase 2 | Term quiz + pitch a concept | Per config (default 7/10) |
-| Phase 3 | Portfolio project defense | Project complete |
-| Phase 4 | Mock interview | Pass 2/3 rounds |
-
-### Weekly Synthesis (every 5th session)
-
-Replaces practice + exercise with a 20-min cross-topic challenge that integrates the full week's concepts into a single portfolio artifact.
+| Block | Micro | Quick | Standard | Deep | Synthesis |
+|-------|-------|-------|----------|------|-----------|
+| Concept of the Day | x | x | x | x | x |
+| Pre-Test | - | - | x | x | - |
+| SM-2 Quiz | x | x | x | x | x |
+| Socratic Lesson | - | x (1-2) | x (5-7) | x (7) | - |
+| Interleaved Practice | - | - | x | x | x |
+| Portfolio Exercise | - | - | x | x | x |
+| Teach-Back | - | - | - | x | - |
+| Concept Linking | - | - | - | x | x |
+| Mastery Check | - | - | x | x | x |
 
 ---
 
-## Repo Structure
+## Curriculum Gallery
+
+Pre-built curricula ready to fork:
+
+| Curriculum | Duration | Sessions | Target Audience |
+|------------|----------|----------|-----------------|
+| [Spatial AI](examples/spatial-ai/) | 10 weeks | ~50 | Technical PM, BD, investors |
+| [Financial Modeling](examples/financial-modeling/) | 4 weeks | ~20 | Business professionals, analysts |
+| [Product Management](examples/product-management/) | 6 weeks | ~30 | Engineers transitioning to PM |
+| [Machine Learning](examples/machine-learning/) | 8 weeks | ~40 | Software engineers learning ML |
+
+---
+
+## Research Basis
+
+This engine implements techniques from learning science research:
+
+- **Pretesting effect** — errors before learning create stronger memory traces
+- **Spaced repetition (SM-2)** — algorithmic scheduling beats cramming by 2-3x
+- **Socratic method** — generation before instruction improves retention by 30-50%
+- **Interleaved practice** — mixing topics beats blocked practice for long-term retention
+- **Teach-back** — explaining to others achieves 90% retention (vs 10% lecture)
+- **Confidence calibration** — metacognitive awareness improves learning efficiency
+- **Testing effect** — retrieval practice is more effective than re-reading
+
+---
+
+## File Structure
 
 ```
-ai-learning-engine/
-├── README.md                          <- You're here
-├── SETUP-GUIDE.md                     <- Step-by-step setup
-├── CURRICULUM-TEMPLATE.md             <- Template: design your curriculum
-├── CURRICULUM-CONFIG-TEMPLATE.md      <- Template: engine configuration (NEW in v2)
-├── SESSION-STATE.md                   <- Template: session state machine (SM-2)
-├── progress.md                        <- Template: session log
-├── COMMUNITIES-TEMPLATE.md            <- Template: community tracker
-├── RESEARCH-REFERENCE.md              <- Template: verified data/sources
-├── CLAUDE-SNIPPET.md                  <- CLAUDE.md / AGENTS.md snippet
-├── LICENSE                            <- MIT License
-├── skills/
-│   ├── learn/SKILL.md                 <- Adaptive learning engine (v2)
-│   └── learn-end/SKILL.md            <- Session exit handler (v2)
-├── platforms/
-│   ├── claude-code/README.md          <- Claude Code / Cowork setup
-│   ├── openai-codex/README.md         <- OpenAI Codex setup
-│   └── cursor-ai/README.md           <- Cursor AI setup
-├── examples/
-│   └── spatial-ai/                    <- Example: Spatial AI curriculum
-├── portfolio/                         <- Portfolio artifacts (NEW in v2)
-├── sessions/                          <- Session archives
-├── assessments/                       <- Phase gate results
-├── swot/                              <- Self-assessments
-├── build-project/                     <- Portfolio project files
-└── outreach/                          <- Networking tracker
+your-curriculum/
+├── CURRICULUM.md              # Master lesson plan (read-only reference)
+├── CURRICULUM-CONFIG.md       # Your personalized settings
+├── SESSION-STATE.md           # Progress tracker (auto-updated)
+├── progress.md                # Daily learning log
+├── COMMUNITIES.md             # Community engagement tracker
+├── portfolio/                 # Portfolio artifacts + analytics dashboard
+├── sessions/
+│   ├── summaries/             # Per-session receipt cards
+│   └── archive/               # Archived state history
+├── assessments/               # Phase gate results
+├── swot/                      # SWOT self-assessments
+└── build-project/             # Portfolio project files
 ```
 
 ---
@@ -190,8 +224,8 @@ ai-learning-engine/
 
 | Platform | Skill Format | Auto-Trigger | Setup Guide |
 |----------|-------------|-------------|-------------|
-| **Claude Code / Cowork** | SKILL.md in `.claude/skills/` | Yes ("let's learn") | [platforms/claude-code/](platforms/claude-code/) |
-| **OpenAI Codex** | SKILL.md in `.agents/skills/` | Yes ("let's learn") | [platforms/openai-codex/](platforms/openai-codex/) |
+| **Claude Code / Cowork** | SKILL.md in `.claude/skills/` | Yes (`/learn`) | [platforms/claude-code/](platforms/claude-code/) |
+| **OpenAI Codex** | SKILL.md in `.agents/skills/` | Yes (`/learn`) | [platforms/openai-codex/](platforms/openai-codex/) |
 | **Cursor AI** | .mdc rules or .cursorrules | Partial (must reference files) | [platforms/cursor-ai/](platforms/cursor-ai/) |
 | **Any AI assistant** | Read the SKILL.md as instructions | Manual (paste the protocol) | Copy SKILL.md contents into your prompt |
 
@@ -211,22 +245,16 @@ Recommended: [WisprFlow](https://wisprflow.ai/) (macOS), Apple Dictation (free),
 
 ---
 
-## Example: Spatial AI Curriculum
-
-The `examples/spatial-ai/` folder contains sample sessions from a real 10-week curriculum on Spatial AI, World Models, and Embodied Intelligence.
-
----
-
 ## FAQ
 
 **Q: Do I need Claude Code specifically?**
 No. The methodology is plain markdown. Claude Code and OpenAI Codex have the best automation, but any LLM works.
 
 **Q: How long does it take to set up?**
-Design your curriculum: 2-3 hours. Configure the engine: 15 minutes. Start learning: immediately.
+Generate a curriculum: 10 minutes with `/generate-curriculum`. Configure: 5 minutes. Start learning: immediately.
 
-**Q: What's new in v2?**
-Pre-testing, Socratic method, SM-2 spaced repetition, confidence calibration, interleaved practice, portfolio exercises, mastery gates, concept caps, weekly synthesis challenges, learning velocity dashboard, and a generic engine architecture with CURRICULUM-CONFIG.md.
+**Q: What's new in v3?**
+Flex sessions (5 time modes), content compression, difficulty scaling, teach-back with peer simulation, concept linking with Mermaid maps, session summary cards, analytics dashboard, streak tracking, milestones, auto-generated sessions, curriculum generator, and curriculum gallery. See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md) for full details.
 
 **Q: Can I use this for non-technical topics?**
 Yes. Finance, law, history, language, music theory — any structured learning works.
@@ -234,17 +262,19 @@ Yes. Finance, law, history, language, music theory — any structured learning w
 **Q: What if I miss a day?**
 The engine uses session numbers, not calendar days. Pick up where you left off. SM-2 recalculates review priorities automatically.
 
-**Q: What if I want multiple sessions in one sitting?**
-Go for it. Sessions are decoupled from calendar days. Do as many as you want.
+**Q: How do I upgrade from v1 or v2?**
+See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md). Your progress is preserved — terminology, position, and session history all carry forward.
 
 ---
 
 ## Contributing
 
 PRs welcome. Areas where help is needed:
+
 - Additional platform adapters (Windsurf, Aider, etc.)
 - Example curricula for different topics
 - Improvements to the SM-2 algorithm or confidence calibration
+- New reference modules for the hub-and-spoke architecture
 - Translations of the template files
 
 ---

@@ -1,213 +1,136 @@
 ---
 name: learn
-description: Resume and run the current curriculum session. Adaptive learning engine with SM-2 spaced repetition, Socratic method, pre-testing, confidence calibration, and mastery-based progression. Triggers on "let's learn", "learn", "next lesson", "continue learning", "resume lesson", "start lesson", "today's lesson", "spatial AI lesson", or anything suggesting the learner wants to continue their curriculum. Also triggers on "/learn".
+description: Resume and run the current curriculum session. Adaptive learning engine with SM-2 spaced repetition, Socratic method, flex sessions (Micro/Quick/Standard/Deep/Synthesis), pre-testing, confidence calibration, teach-back, concept linking, and mastery-based progression. Triggers on "let's learn", "learn", "next lesson", "continue learning", "resume lesson", "start lesson", "today's lesson", or "/learn".
 ---
 
-# Adaptive Learning Engine
+# Adaptive Learning Engine v3
 
-Evidence-based session runner. Reads a curriculum config, loads state, and guides the learner through an optimized session flow.
+Evidence-based session runner with flex sessions and hub-and-spoke architecture. Process only — all rules live in references/.
 
-## Step 1: Load Curriculum Config (MANDATORY FIRST STEP)
+## Step 1: Load Config
 
 Read `CURRICULUM-CONFIG.md` from the curriculum directory specified in CLAUDE.md.
+Extract: file paths, learner bridges, exercise types, mastery thresholds, flex defaults, compression settings, tone.
 
-Extract:
-- **File paths**: curriculum_file, state_file, progress_file, portfolio_dir, communities_file, research_reference
-- **Learner bridges**: existing knowledge to connect new concepts to
-- **Exercise types**: portfolio artifact formats
-- **Mastery thresholds**: per-phase pass/fail scores
-- **Tone**: communication style
-
-## Step 2: Load Session State
+## Step 2: Load & Validate State
 
 Read the `state_file` (SESSION-STATE.md). This is the **single source of truth**.
 
-Extract:
-- **Next Session Plan**: exactly what to teach today
-- **Sessions Completed**: progress counter
-- **Current Curriculum Day**: maps to CURRICULUM.md day numbering
-- **Terminology Mastery Tracker**: SM-2 fields (interval, next_review, ease, confidence, status)
-- **Pending Questions**: unresolved from previous sessions
-- **Flags for Next Session**: items to surface at start
-- **Learning Velocity Dashboard**: trend data
-- **Community Activity**, **Build Project**, **Assessment Scores**
+**Validate:**
+- Required sections exist (position, terminology tracker, session log, flags)
+- SM-2 values in range: ease 1.3-3.0, interval >= 0. Read `references/sm2-algorithm.md` for sanity check rules.
+- If corrupted: warn learner, offer reconstruction from progress.md + git history
+- If position mismatch with CURRICULUM.md: warn learner, offer to recalibrate
 
-If "Sessions Completed" shows 0, this is the first session.
+**CHECKPOINT**: After validation, write a checkpoint note to progress.md ("Session started, state valid").
 
-## Step 3: Load Today's Lesson
+## Step 3: Load Curriculum
 
-Read the `curriculum_file` (CURRICULUM.md). Find the section matching "Next Session Plan."
-
-If the curriculum day has more than 7 new concepts, plan to cover only 7 this session. The remaining concepts carry to the next session (multi-session day).
+Read `curriculum_file` (CURRICULUM.md). Find the section matching "Next Session Plan."
+If the day has >7 new concepts, plan to cover only 7 (multi-session day).
 
 ## Step 4: Open Session
 
-Greet the learner briefly:
-- Session number and approximate total (e.g., "Session 5 of ~65")
-- Today's topic title
-- Any flags from last session (corrections, weak terms, pending deliverables)
-- If pending questions exist, surface them
-
-## Step 5: Pre-Test on NEW Material (5 min)
-
-**Before teaching ANY new concept**, generate 3-5 questions about today's upcoming material from the curriculum.
-
-These questions test concepts the learner has NOT been taught yet. The learner will get most wrong — **that's the point**. The pretesting effect (errors before learning create stronger memory traces than reading before learning).
-
-For each question:
-1. Pose the question, connecting to learner bridges where possible
-2. Let the learner attempt an answer
-3. Do NOT reveal the correct answer yet — say "We'll come back to this during the lesson"
-4. Record: question, learner's attempt, correct answer
-
-Use these pre-test results during the Socratic Lesson (Step 7) to highlight what the learner got right and wrong.
-
-## Step 6: Spaced Repetition Quiz (10 min)
-
-Use the SM-2 algorithm to select terms for review.
-
-### Term Selection
-1. From the Terminology Mastery Tracker, find all terms where `next_review <= today`
-2. If more than 10 terms are due: prioritize by (a) most days overdue first, (b) then lowest ease factor
-3. Cap at 10 terms per session. Overflow rolls to next session automatically.
-
-### Quiz Flow (for each term)
-1. Give the term
-2. Learner explains it
-3. **Before revealing if correct**: ask learner to rate confidence (1-5)
-4. Score: correct or incorrect
-5. Reveal correct answer, noting what was right/wrong
-
-### SM-2 Update (for each term after scoring)
+Display session header:
 ```
-If correct:
-  ease_factor = max(1.3, ease_factor + 0.1)
-  interval = max(1, round(previous_interval * ease_factor))
-  next_review = today + interval days
-
-If wrong:
-  ease_factor = max(1.3, ease_factor - 0.2)
-  interval = 1
-  next_review = tomorrow
+Session [X] | [Y]-day streak | [Z]/[N] concepts mastered ([W]%)
 ```
 
-### Confidence Calibration
-- confidence >= 4 AND wrong → log "overconfident" (dangerous blind spot — flag for extra review)
-- confidence <= 2 AND correct → log "underconfident" (learner knows more than they think)
-- otherwise → log "calibrated"
+**Streak check**: Read `references/mastery-gates.md` for streak rules.
+- If >3 days since last session: reset streak, display "Welcome back! Starting a fresh streak."
+- If >7 days: suggest starting with Quick mode to warm up.
 
-### Phase Gate Days
-If this is a **Phase Gate session** (end of a phase, per curriculum), run the full gate assessment instead of the regular quiz. See CURRICULUM.md for gate-specific instructions.
+**Milestone check**: Check milestones_shown list. Display any new milestone message.
 
-## Step 7: Socratic Lesson (25-30 min)
+**Concept of the Day (E4)**: Pick 1 random "Known" term from tracker. Ask: "Quick check -- what's [TERM]?" Accept brief answer, confirm, move on. (Skip if no Known terms yet.)
 
-**CRITICAL RULE: NEVER explain a concept before the learner has attempted to reason about it.**
+**Surface flags** from previous session.
 
-For EACH new concept (max 7 per session):
+**ASK**: "How much time do you have?" Map answer to mode:
+- ~5 min: Micro
+- ~15-20 min: Quick
+- ~60 min: Standard (default)
+- ~90+ min: Deep Dive
+- Every 5th session: Synthesis (override other choices, but learner can defer)
 
-1. **Bridge question**: Pose a question connecting the concept to the learner's existing knowledge (from learner_bridges in config).
-   - Example: "How would your 16 Claude agents 'see' a physical room? What information would they need?"
+Read `references/flex-session-blocks.md` for the block composition of the chosen mode.
 
-2. **Learner generates**: Let them attempt an answer. Don't interrupt.
+## Step 5: Run Mode Blocks
 
-3. **Reveal**: Explain the concept, highlighting:
-   - What they got right
-   - What they missed
-   - Connect to their pre-test answer if they attempted this concept in Step 5
+### MICRO MODE (5 min)
+1. **SM-2 Quick Drill** (3 min): Read `references/sm2-algorithm.md`. Quiz 3 due terms. Confidence rating per term.
+2. **One interleaved question** (1 min): Mix concept from current + previous session.
+3. **Velocity check + close** (1 min).
+CHECKPOINT to progress.md
 
-4. **Deeper follow-up**: Ask ONE follow-up question that goes one level deeper.
+### QUICK MODE (15-20 min)
+1. **SM-2 Quiz** (10 min): Read `references/sm2-algorithm.md`. Up to 10 terms. Confidence calibration. Difficulty scaling per `references/compression-logic.md`.
+2. **Interleaved Practice** (5-8 min): 3 problems mixing current + previous concepts. Include 1 spaced exercise from queue.
+3. **Velocity Check + Close** (2 min).
+CHECKPOINT to progress.md after quiz
 
-Use web search for the latest data, funding rounds, and product launches during the lesson.
+### STANDARD MODE (50-65 min)
+1. **Pre-Test** (5 min): 3-5 questions on today's NEW concepts BEFORE teaching. Don't reveal answers. If learner gets one right, say "Interesting -- let's verify during the lesson."
+CHECKPOINT
+2. **SM-2 Quiz** (8-10 min): Read `references/sm2-algorithm.md`. Read `references/compression-logic.md` for content compression (skip Known terms, keep 1 random check).
+CHECKPOINT
+3. **Socratic Lesson** (20-25 min): Max 7 concepts (fewer if compression active). For EACH concept: bridge question, learner attempts, reveal + connect to pre-test answer. Mid-lesson retrieval checks every 2-3 concepts. **Escape hatch**: if learner says "I have no idea," give a hint first. If still stuck after hint, explain directly. Read `references/compression-logic.md` for difficulty scaling and velocity pacing.
+CHECKPOINT
+4. **Interleaved Practice** (8-10 min): 5 problems mixing concepts. Include 1 spaced exercise from queue. Reference CURRICULUM.md for concept CONTENT, not just term definitions.
+5. **Portfolio Exercise** (8-12 min): Use exercise_types from config. Every 3rd Standard session: swap for teach-back (read `references/teach-back-protocol.md`).
+6. **Reflect + Mastery Check** (5 min): Read `references/mastery-gates.md`. Ask founder summary. Run mastery gate. Every 10th session: growth reflection. Flag items for next session.
+CHECKPOINT
 
-## Step 8: Interleaved Practice (10 min)
+### DEEP DIVE MODE (90-120+ min)
+All Standard steps PLUS:
+7. **Teach-Back with Peer Simulation** (15-20 min): Read `references/teach-back-protocol.md`. Claude plays skeptical colleague.
+CHECKPOINT
+8. **Concept Linking** (10-15 min): Read `references/concept-linking.md`. Surface 3-5 connections, update concept links table, generate/update Mermaid map.
+9. **Community Check-in** (5-10 min): Phase-appropriate engagement.
+10. **Extended Practice** (10-15 min): Session variety -- occasionally swap for debate/case study/reverse quiz per config.
 
-Pose 3 problems that mix today's concepts with concepts from at least 2 previous sessions.
+### SYNTHESIS MODE (every 5th session, 60-75 min)
+1. **SM-2 Quiz expanded** (15 min): All terms from the week.
+2. **Integration Challenge** (30 min): Cross-topic exercise requiring all week's concepts.
+3. **Teach-Back** (15 min): 2-min pitch of the week's big idea. Read `references/teach-back-protocol.md`.
+4. **Growth Reflection** (10 min): Velocity comparison, SWOT update.
 
-**Important**: Reference CURRICULUM.md for concept CONTENT (not just term definitions from the tracker). Terms are shallow; concepts have depth.
+## Step 6: Close Session (ALL MODES)
 
-Example: "Company X uses [Session 3 concept: imitation learning] to train robots for [today's concept: warehouse manipulation]. What's the business case using [Session 2 concept: the convergence thesis]?"
+### Update State
+- Update SESSION-STATE.md with all session data (SM-2 updates, new terms, session log, flags)
+- Read `templates/session-state-schema.md` for archive rules: trim session log to last 10, pre-tests to last 5
+- Archive overflow to `sessions/archive/state-history.md`
 
-This forces CONNECTION and TRANSFER, not just recall.
+### Generate Outputs
+1. **Session Summary Card**: Read `templates/session-summary-card.md`. Generate and save to `sessions/summaries/session-XX.md`
+2. **Analytics Dashboard**: Read `templates/analytics-dashboard.html`. Update with current data. Save to `portfolio/analytics-dashboard.html`
+3. **Concept Map** (if Deep/Synthesis): Read `references/concept-linking.md`. Generate Mermaid map. Save to `portfolio/concept-map.md`
 
-## Step 9: Portfolio Exercise (10-15 min)
+### Update Progress
+- Update progress.md with session entry
 
-Use `exercise_types` from the config to frame the drill as a REAL artifact.
+### Auto-Generate Next Session
+- Use web search to research latest news, papers, announcements relevant to next session's topic
+- Generate next session file at `sessions/day-XX-session.md`
+- If web search fails: generate from CURRICULUM.md only, note "Research pending"
 
-NOT: "Write a 1-page comparison of VLA approaches"
-YES: "Draft a LinkedIn post explaining why VLAs are the transformer moment for robotics"
-
-Every output should be something the learner could actually use — for networking, job applications, portfolio, or content creation.
-
-Save output to the `portfolio_dir` specified in config.
-
-## Step 10: Community Check-in (5 min)
-
-- Phase 1-2: "What did you notice lurking? Interesting threads? People? Topics?"
-- Phase 3+: Review engagement plan. Posts? Replies? Connections?
-- Log activity in the `communities_file` from config
-
-## Step 11: Reflect + Mastery Check (5 min)
-
-### a) Founder Summary
-Ask the learner for an "explain it to a founder" summary (2-3 sentences they could use at a networking event). This is a generation exercise — they produce it from memory, not from notes.
-
-### b) Mastery Gate
-Score today's new concepts (quick verbal check on each):
-- Use the threshold from config (`mastery_thresholds`)
-- **Below threshold**: Run 10-min targeted remediation on weak concepts only. Then re-test.
-- **Fail twice**: ADVANCE anyway. Flag weak concepts as "needs extra spaced repetition" in the tracker. Do NOT block progression indefinitely.
-- **Above threshold**: Advance to next session.
-
-### c) Flags
-- Flag items for next session (corrections, weak terms, pending deliverables)
-- Suggest 2-3 high-value follow-up questions aligned to learner profile
-
-## Step 12: Weekly Synthesis Challenge (every 5th session)
-
-On sessions 5, 10, 15, 20, 25... **replace** Interleaved Practice (Step 8) and Portfolio Exercise (Step 9) with a 20-minute Synthesis Challenge:
-
-1. Pose a question requiring integration of ALL concepts from the current week
-2. The question should require application and transfer, not just recall
-3. Output = a real networking/portfolio artifact (saved to portfolio_dir)
-
-Example: "A VC asks you: What's the single biggest technical risk in spatial AI and why should I invest anyway? Answer using concepts from all 5 sessions this week."
-
-## Step 13: Update State + Commit (MANDATORY)
-
-### Update SESSION-STATE.md:
-- Advance session counter (only if mastery gate passed or escape valve triggered)
-- Set "Current Curriculum Day" based on session-to-day mapping
-- Set "Next Session Plan" to next session's content
-- Update "Last Session Date"
-- Add entry to "Session Log (Last 5)"
-- Update Terminology Mastery Tracker with SM-2 fields for all quizzed terms
-- Add new terms from today's lesson (set: interval=1, next_review=tomorrow, ease=2.5, status=New)
-- Update Confidence Calibration Summary
-- Update Pre-Test Results table
-- Update Learning Velocity Dashboard
-- Update Community Activity, Pending Questions, Flags
-
-### Update progress.md:
-Add today's entry with: date, session#, curriculum day, topics covered, key insight, pre-test score, questions.
-
-### Phase Gate days also update:
-- assessments/ folder with scored results
-- swot/ folder (if applicable)
-- Assessment Scores table in SESSION-STATE.md
-
-### Git Commit & Push:
+### Git Commit + Push
 ```
-git add [curriculum_dir from config]
-git commit -m "Curriculum session: Session X - [brief topic]"
+git add [curriculum_dir]
+git commit -m "Curriculum session: Session X ([Mode]) - [brief topic]"
 git push
 ```
 
 ## Key Rules
 
 - **Socratic first**: Never explain before the learner attempts. Ask, then reveal.
-- **Concept cap**: Max 7 new concepts per session. Split multi-concept days across sessions. Depth over breadth.
+- **Escape hatch**: If learner says "I have no idea" -- give a hint, then explain if still stuck.
+- **Pre-test correct**: If learner gets a pre-test question right, say "Interesting -- let's verify during the lesson" (don't skip the concept).
+- **Concept cap**: Max 7 new concepts per session. Depth over breadth.
 - **Zero hallucination**: Say "unsure" if unsure. Use web search for current data.
 - **Quantify everything**: Market sizes, funding, growth rates, multiples.
 - **Portfolio output**: Every exercise produces a real, usable artifact.
-- **SM-2 discipline**: Always update the tracker. Bounds: ease >= 1.3, interval >= 1.
-- **Session numbering**: Use session numbers, not day numbers. Learner can do multiple sessions per sitting.
+- **SM-2 discipline**: Always update the tracker. Read references/sm2-algorithm.md for bounds.
+- **Checkpoints**: Write to progress.md after each major block. If /compact fires, re-read progress.md to resume.
+- **On-demand loading**: Only read reference files when the relevant block is active. Micro/Quick modes never load teach-back or concept-linking.

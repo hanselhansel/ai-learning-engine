@@ -16,6 +16,11 @@
 | **portfolio_dir** | portfolio/ |
 | **communities_file** | COMMUNITIES.md |
 | **research_reference** | RESEARCH-REFERENCE.md |
+| **sessions_dir** | sessions/ |
+| **summaries_dir** | sessions/summaries/ |
+| **archive_dir** | sessions/archive/ |
+| **analytics_dashboard** | portfolio/analytics-dashboard.html |
+| **concept_map** | portfolio/concept-map.md |
 | **target_sessions** | ~[ESTIMATED TOTAL] (flexible — depends on concept cap splits) |
 
 ## Learner Bridges
@@ -42,16 +47,41 @@ Every drill produces a real artifact the learner can use. Rotate through these f
 
 ## Mastery Thresholds
 
-| Phase | Threshold | When |
-|-------|-----------|------|
-| Phase 1 ([PHASE NAME]) | [X]/10 | Sessions 1-[Y] |
-| Phase 2+ ([PHASE NAME]) | [X]/10 | Sessions [Y]+ |
+| Phase | Quiz Threshold | Explain Threshold | When |
+|-------|---------------|-------------------|------|
+| Phase 1 ([PHASE_NAME]) | [X]/10 ([X]%) | [Y]/5 | Sessions 1-[N] |
+| Phase 2 ([PHASE_NAME]) | [X]/10 ([X]%) | [Y]/5 | Sessions [N]-[M] |
+| Phase 3 ([PHASE_NAME]) | [X]/10 ([X]%) or N/A (project-based) | [Y]/5 | Sessions [M]-[P] |
+| Phase 4 ([PHASE_NAME]) | [X]/10 ([X]%) | [Y]/5 | Sessions [P]-[Q] |
 
-Mastery gates use these thresholds. Below threshold → 10-min remediation → re-test. Fail twice → advance with a "weak" flag (the engine never blocks indefinitely).
+Mastery gates use these thresholds. Below threshold → 10-min remediation → re-test. Fail twice → advance with "weak" flag (the engine never blocks indefinitely).
+
+## Flex Session Defaults
+
+| Setting | Value |
+|---------|-------|
+| **default_mode** | [Standard] |
+| **synthesis_frequency** | [every 5th session] |
+| **teach_back_frequency** | [every 3rd Standard session] |
+| **growth_reflection_frequency** | [every 10th session] |
+| **concept_cap** | [7 per session] |
+| **sm2_quiz_cap** | [10 terms (3 for Micro)] |
+| **interleaved_cap** | [5 questions (1 for Micro, 3 for Quick)] |
+
+## Compression Settings
+
+| Setting | Value |
+|---------|-------|
+| **skip_known_threshold** | [ease > 2.5 AND correct_count >= 3] |
+| **compress_lesson_threshold** | [pre_test_score >= 80%] |
+| **light_socratic_threshold** | [pre_test_score >= 60%] |
+| **velocity_fast** | [> 1.3x average] |
+| **velocity_slow** | [< 0.7x average] |
+| **velocity_struggling** | [< 0.5x average] |
 
 ## Synthesis Challenge Schedule
 
-Weekly synthesis replaces interleaved practice + portfolio exercise on every 5th session:
+Weekly synthesis replaces Standard on every 5th session:
 - Session 5: Week 1 synthesis
 - Session 10: Week 2 synthesis
 - Session 15, 20, 25...: Continue pattern
@@ -70,3 +100,13 @@ Weekly synthesis replaces interleaved practice + portfolio exercise on every 5th
 | Phase 1-2 | Lurk: observe communities, note interesting threads/people/topics |
 | Phase 3 | Narrow: select 3-4 communities based on learning goals, start engaging |
 | Phase 4+ | Contribute: active posting, connect online to IRL meetings |
+
+## Session Variety (C4) — Rotation
+
+For Deep Dive mode, occasionally swap portfolio exercise for:
+- **Debate**: [argue both sides of a controversial topic in the space]
+- **Case study**: [analyze a real company's strategic decision]
+- **Deep-dive single concept**: [30-min exploration of one concept from multiple angles]
+- **Reverse quiz**: [learner writes quiz questions, Claude answers (tests depth of understanding)]
+
+Rotation: every 4th Deep session, use a variety format instead of standard portfolio exercise.

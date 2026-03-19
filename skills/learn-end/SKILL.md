@@ -1,132 +1,137 @@
 ---
 name: learn-end
-description: End and save progress for the current curriculum session. Use when the learner says "learn-end", "/learn-end", "end lesson", "stop learning", "wrap up lesson", "done learning", "save progress", "pause lesson", "that's enough for today", or anything suggesting they want to stop the current session. This handles all session bookkeeping so nothing is lost.
+description: End and save progress for the current curriculum session. Use when the learner says "learn-end", "/learn-end", "end lesson", "stop learning", "wrap up lesson", "done learning", "save progress", "pause lesson", "that's enough for today", or anything suggesting they want to stop and save progress. Handles all 5 flex modes (Micro/Quick/Standard/Deep/Synthesis) and preserves partial progress.
 ---
 
-# End Curriculum Session
+# End Learning Session (v3)
 
-Gracefully close a learning session, capture everything learned, and save all progress so the next session picks up seamlessly.
-
-The learner may end a session at any point: mid-lesson, after the quiz, after an exercise, or at the natural end. Handle all cases.
+Gracefully close a session at any point. Captures progress, saves state, ensures seamless resume.
 
 ## Step 1: Load Config
 
-Read `CURRICULUM-CONFIG.md` from the curriculum directory to get file paths and settings.
+Read `CURRICULUM-CONFIG.md` from the curriculum directory specified in CLAUDE.md.
+Extract file paths: state_file, progress_file, summaries_dir, analytics_dashboard, concept_map.
 
-## Step 2: Session Checkpoint
+## Step 2: Determine Session State
 
-Determine where the learner is in today's session by reviewing the conversation history:
+Review conversation history to determine:
+- **Active mode**: Which flex mode was in progress? (Micro/Quick/Standard/Deep/Synthesis)
+- **Last completed block**: Which was the last block fully completed?
+- **Current block**: What was in progress when the learner stopped?
 
-| Completed Through | Classification |
-|-------------------|---------------|
-| All blocks (pre-test through mastery check) | **Full session** |
-| Pre-test + quiz + lesson, but not practice/exercise | **Partial — lesson done** |
-| Pre-test + quiz only | **Partial — quiz done** |
-| Pre-test only or mid-lesson | **Partial — early exit** |
-| SM-2 quiz partially completed | **Partial — mid-quiz** |
+### Completion Check by Mode
 
-Tell the learner clearly what was completed and what wasn't.
+Read `references/flex-session-blocks.md` (from the learn skill directory) for block composition.
 
-## Step 3: Quick Reflect (2 min)
+**Micro** — complete if: SM-2 drill + interleaved Q + velocity check all done
+**Quick** — complete if: SM-2 quiz + interleaved practice + velocity check all done
+**Standard** — complete if: Pre-test + SM-2 + Socratic + interleaved + portfolio + reflect all done
+**Deep** — complete if: All Standard blocks + teach-back + concept linking + community + extended practice all done
+**Synthesis** — complete if: SM-2 expanded + integration challenge + teach-back + growth reflection all done
 
-Ask the learner two questions (keep it fast — they want to stop):
+## Step 3: Quick Reflect (2 min max)
 
-1. **"What's the one thing that clicked today?"** (captures key insight for progress.md)
-2. **"Anything confusing or unresolved?"** (captures pending questions for SESSION-STATE.md)
+Ask two questions (keep it fast — the learner wants to stop):
 
-If they say "just save" or seem in a hurry, skip this and use what you observed during the session.
+1. **"What's the one thing that clicked today?"** — captures key insight
+2. **"Anything confusing or unresolved?"** — captures pending questions
 
-## Step 4: Determine Session Advancement
+If learner says "just save" or seems rushed — skip this, use observations from the session.
 
-This is the most important decision:
+## Step 4: Determine Day Advancement
 
-- **Full session completed** (pre-test + quiz + lesson + practice + exercise + mastery check all done):
-  Advance the session counter. Set "Next Session Plan" to the next session.
+**CRITICAL DECISION:**
 
-- **Partially completed** (stopped mid-lesson or skipped practice/exercise/mastery):
-  Do NOT advance. Set "Next Session Plan" to resume the same session. Add flag: "Resume Session X from [block name]"
+- **Full session completed** (all required blocks for the active mode done):
+  - Advance day counter
+  - Set "Next Session Plan" to next day
+  - Increment sessions_completed
 
-- **Only quiz done**: Do NOT advance. Flag: "Resume Session X from Lesson block."
+- **Partial session** (stopped before all blocks done):
+  - Do NOT advance
+  - Set "Next Session Plan" to: "Resume Day X from [last incomplete block] ([Mode] mode)"
+  - Add flag: "Partial [Mode] session — completed through [block]. Resume from [next block]."
 
-- **Mastery gate not reached**: Flag: "Resume Session X — mastery check pending. Run remediation before advancing."
-
-This prevents skipping material.
+- **Only opened session** (no blocks completed):
+  - Do NOT advance
+  - Add flag: "Session opened but no blocks completed. Resume Day X."
 
 ## Step 5: Update SESSION-STATE.md
 
-Read SESSION-STATE.md, then update:
+Read current state_file, then update:
 
 | Field | What to Update |
 |-------|---------------|
-| **Current Phase/Week** | Only advance if full session completed |
-| **Sessions Completed** | Only increment if full session completed |
-| **Current Curriculum Day** | Update based on session-to-day mapping |
-| **Next Session Plan** | Next session if complete, or "Resume Session X from [block]" if partial |
-| **Last Session Date** | Today's date |
-| **Session Log (Last 5)** | Add entry: date, session#, duration estimate, topics covered, "FULL" or "PARTIAL" |
-| **Terminology Mastery Tracker** | Update SM-2 fields ONLY for terms that were actually tested. Leave untested terms' next_review unchanged. |
-| **Confidence Calibration Summary** | Update with this session's data (if quiz happened) |
-| **Pre-Test Results** | Update with this session's pre-test scores (if pre-test happened) |
-| **Learning Velocity Dashboard** | Update metrics for this session |
-| **Community Activity** | Update if community check-in happened |
-| **Pending Questions** | Add any unresolved questions raised |
-| **Flags for Next Session** | Add resume point if partial; add follow-up items |
-| **Build Project** | Update status if project work was done |
-| **Outreach Pipeline** | Update counts if outreach happened |
+| Current Phase/Week/Day | Only advance if full session completed |
+| Sessions Completed | Only increment if full session completed |
+| Last Session Date | Today's date |
+| Last Session Mode | The mode that was active |
+| Next Session Plan | Next day if complete, or resume instruction if partial |
+| Streak Count | Increment if full session. Keep current if partial (still counts as activity). |
+| Session Log | Add entry with: date, session#, mode, day, duration, topics, "FULL" or "PARTIAL ([last block])" |
+| Terminology Tracker | Update with any SM-2 quiz results from this session |
+| Confidence Calibration | Update if quiz was completed |
+| Pre-Test Results | Update if pre-test was completed |
+| Velocity Dashboard | Update if enough data from this session |
+| Concept Links | Update if concept linking block was reached |
+| Spaced Exercise Queue | Update if exercises were completed |
+| Pending Questions | Add any unresolved questions raised |
+| Flags for Next Session | Add resume point if partial + any follow-up items |
 
-**Critical SM-2 rule**: If the quiz was interrupted mid-way, only update intervals for terms that were actually answered. Do NOT reset or modify terms that weren't tested — their next_review dates remain unchanged.
+## Step 6: Generate Partial Summary Card
 
-## Step 6: Update progress.md
+Read `templates/session-summary-card.md` (from the learn skill directory).
+Generate a summary card even for partial sessions. Mark as "PARTIAL" in the card.
+Save to `sessions/summaries/session-XX.md` (use sessions_completed + 1 if partial, since counter didn't advance).
 
-Add today's entry:
-```
-| [date] | Session X | Curriculum Day Y | [topics covered] | [key insight from Step 3] | [questions] |
-```
+For partial sessions, show:
+- Blocks completed vs total for the mode
+- Any quiz/pre-test scores captured
+- Partial progress notation
 
-If partial session, note it: "PARTIAL - completed through [block name]"
+## Step 7: Update Progress + Analytics
 
-## Step 7: Save Any Deliverables
+- Add entry to progress.md: "PARTIAL - completed through [block name]" if partial
+- Update analytics dashboard if quiz data was collected
+- Update concept map if concept linking was reached
 
-If the learner produced any output during the session, save to the correct location:
+## Step 8: Save Deliverables
+
+If any written output was produced during the session (exercise, analysis, SWOT, etc.), ensure it's saved:
 
 | Output Type | Save To |
 |-------------|---------|
-| Portfolio exercise output | `portfolio_dir` from config |
-| SWOT assessment | `swot/phase-X-swot.md` |
-| Assessment results | `assessments/phase-X-gate.md` |
-| Outreach drafts | `outreach/` |
-| Community notes | Update `communities_file` from config |
+| Portfolio exercise | portfolio/ |
+| SWOT assessment | swot/phase-X-swot.md |
+| Assessment results | assessments/phase-X-gate.md |
 
-## Step 8: Session Summary
+## Step 9: Session Summary
 
-Give the learner a brief, structured summary:
+Display brief summary to the learner:
 
 ```
-SESSION SUMMARY
-- Session: [X] of ~[total] ([complete/partial])
-- Curriculum Day: [Y]
+SESSION SAVED
+- Day: [X] of [TOTAL] ([complete/partial])
+- Mode: [mode] ([blocks completed]/[total blocks])
 - Topic: [today's topic]
-- Key insight: [from Step 3]
-- Pending: [any unresolved items]
-- Next session: [what happens next time they say /learn]
-- Overall progress: [X]% complete
-- SM-2 terms due next session: [count]
-- Velocity: [concepts mastered this session] | [avg ease trend]
+- Key insight: [from Step 3 or session observation]
+- Next: [what happens when they type /learn next]
+- Progress: [X]% complete
 ```
 
-## Step 9: Git Commit & Push
+## Step 10: Git Commit + Push
 
 ```
 git add [curriculum_dir from config]
-git commit -m "Curriculum session: Session X [complete/partial] - [topic]"
+git commit -m "Curriculum progress: Day X [complete/partial] ([Mode]) - [topic]"
 git push
 ```
 
 ## Key Rules
 
-- **Be fast.** The learner wants to stop, not have a long wrap-up conversation.
-- **Never advance on a partial session.** This prevents gaps in learning.
-- **Always set Flags for Next Session** so /learn knows exactly where to resume.
-- **SM-2 integrity**: Only update intervals for actually-tested terms.
-- **Always commit and push.** No progress should be lost.
-- **Session numbers, not day numbers.** Use session numbering throughout.
+- **Be fast.** The learner wants to stop, not have a long conversation.
+- **Never advance on partial.** This prevents gaps in learning.
+- **Partial still counts for streak.** Opening a session and doing some work maintains the streak.
+- **Always set resume flags.** The learn skill must know exactly where to pick up.
+- **Always commit.** No progress should be lost.
+- **Mode-aware.** A "partial" Micro (2/3 blocks done) is different from a "partial" Deep (5/14 blocks done). Be specific about what was completed.

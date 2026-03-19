@@ -1,23 +1,26 @@
-# Session State: [YOUR TOPIC] Curriculum
+# Session State: [YOUR TOPIC] Curriculum (v3)
 
 > **AUTO-RESUME PROTOCOL:**
 > 1. When learner says "let's learn" or similar, READ THIS FILE FIRST.
-> 2. Read CURRICULUM-CONFIG.md for file paths and settings.
-> 3. Look at "Next Session Plan" below to know exactly what to teach.
-> 4. Run the full session protocol from the learn skill (pre-test → SR quiz → Socratic lesson → practice → portfolio → mastery check).
-> 5. At session end: advance session counter, update all trackers, commit/push.
+> 2. Read CURRICULUM-CONFIG.md for file paths, learner bridges, and settings.
+> 3. Look at "Next Session Plan" below for today's content.
+> 4. Run the full v3 session protocol from the learn skill (flex mode selection → pre-test → SR quiz → Socratic lesson → practice → portfolio → mastery check).
+> 5. At session end: advance session counter, update all trackers, generate summary card + dashboard, commit/push.
 > 6. Learner should NEVER need to specify session number. This file is the single source of truth.
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| **Current Phase** | Phase 1: [First Phase Name] |
+| **Current Phase** | Phase 1: [FIRST_PHASE_NAME] |
 | **Current Week** | Week 1 |
-| **Current Curriculum Day** | Day 1 |
+| **Current Day** | Day 1 |
 | **Sessions Completed** | 0 / ~[TARGET_SESSIONS] |
 | **Last Session Date** | - |
-| **Next Session Plan** | Phase 1, Week 1, Day 1: [First Topic] |
+| **Last Session Mode** | - |
+| **Next Session Plan** | Phase 1, Week 1, Day 1: [FIRST_TOPIC] |
+| **Streak Count** | 0 |
+| **Milestones Shown** | [] |
 
 ## Assessment Scores
 
@@ -45,9 +48,9 @@
 ## Terminology Mastery Tracker (SM-2)
 
 Terms are reviewed using spaced repetition. `next_review` determines when a term appears in the quiz.
-- **Known**: 3+ correct, ease > 2.3
-- **Learning**: 1-2 correct or ease <= 2.3
-- **New**: 0 correct, not yet quizzed
+- **Known**: correct_count >= 3 AND ease > 2.3
+- **Learning**: 1+ correct OR ease <= 2.3
+- **New**: never quizzed
 
 ### Session 1 Terms
 
@@ -69,9 +72,21 @@ Terms are reviewed using spaced repetition. `next_review` determines when a term
 
 ## Learning Velocity Dashboard
 
-| Session | Concepts Mastered | Avg Ease Trend | Calibration % | Pre-Test Δ | Est. Sessions Remaining |
-|---------|------------------|----------------|---------------|------------|------------------------|
-| | | | | | |
+| Session | Mode | Concepts Taught | Concepts Mastered | Velocity | Avg Ease | Calibration % | Pre-Test Δ | Est. Remaining |
+|---------|------|----------------|-------------------|----------|----------|---------------|-----------|----------------|
+| | | | | | | | | |
+
+## Concept Links
+
+| Concept A | Relationship | Concept B | Session Added |
+|-----------|-------------|-----------|---------------|
+| | | | |
+
+## Spaced Exercise Queue
+
+| Exercise | Session Created | Next Review | Interval |
+|----------|----------------|-------------|----------|
+| | | | |
 
 ## Community Activity Summary
 
@@ -97,11 +112,11 @@ Terms are reviewed using spaced repetition. `next_review` determines when a term
 | Meetings booked | 0 |
 | Meetings completed | 0 |
 
-## Session Log (Last 5)
+## Session Log (Last 10)
 
-| Date | Session | Curriculum Day | Duration | Key Topics | Notes |
-|------|---------|---------------|----------|-----------|-------|
-| | | | | | |
+| Date | Session | Mode | Curriculum Day | Duration | Key Topics | Notes |
+|------|---------|------|---------------|----------|-----------|-------|
+| | | | | | | |
 
 ## Flags for Next Session
 
