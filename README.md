@@ -255,4 +255,4 @@ MIT
 
 ---
 
-Built by [@ForBotSake](https://x.com/forbotsakeco). Powered by evidence-based learning science and a real 10-week Spatial AI learning sprint.
+Powered by evidence-based learning science and a real 10-week Spatial AI learning sprint.
