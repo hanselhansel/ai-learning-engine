@@ -1,8 +1,127 @@
 # AI Learning Engine v3
 
-An evidence-based adaptive learning engine for Claude Code. Turn any topic into a structured curriculum with spaced repetition, Socratic teaching, flex sessions, and mastery-based progression.
+**Turn any AI assistant into a structured tutor with spaced repetition, mastery gates, and proof-of-learning.**
 
-Works with **Claude Code**, **OpenAI Codex**, **Cursor AI**, or any AI assistant that reads markdown files.
+![Version](https://img.shields.io/badge/version-3.0-blue)
+![Features](https://img.shields.io/badge/features-32-brightgreen)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![Stars](https://img.shields.io/github/stars/hanselhansel/ai-learning-engine?style=social)
+
+![Claude Code](https://img.shields.io/badge/Claude_Code-CC785C?logo=anthropic&logoColor=white)
+![OpenAI Codex](https://img.shields.io/badge/OpenAI_Codex-412991?logo=openai&logoColor=white)
+![Cursor](https://img.shields.io/badge/Cursor_AI-000000?logo=cursor&logoColor=white)
+
+---
+
+## Why I Built This
+
+I needed to learn an entirely new field from scratch — robotics, world models, embodied intelligence. Not casually. Deeply enough to hold real conversations with experts.
+
+YouTube and articles didn't work. Passive consumption, no feedback loop, no way to know if I actually understood anything. So I built a system that forces active recall, blocks advancement until I prove understanding, and tracks every concept with spaced repetition.
+
+3 sessions in: quiz scores climbing, categorization accuracy 51.5% → 86%, founder-level explanations scoring 9/10. The system works. Fork it and learn anything.
+
+---
+
+> **Building & Learning in Public**
+> Currently learning: Spatial AI | Day 4/50 | 38 terms tracked | 3 sessions complete
+>
+> [Live Analytics Dashboard](https://hanselhansel.github.io/ai-learning-engine/portfolio/analytics-dashboard.html)
+
+---
+
+## Session Summary Card
+
+```
+╔══════════════════════════════════════════════╗
+║          LEARNING SESSION RECEIPT            ║
+╠══════════════════════════════════════════════╣
+║  Session:    #4 (Day 3)                      ║
+║  Mode:       Standard                        ║
+║  Duration:   ~90 min                         ║
+║  Date:       2026-03-19                      ║
+║  Streak:     2 days                          ║
+╠══════════════════════════════════════════════╣
+║  SM-2 Quiz:  6.9/10 (just below target)      ║
+║  Strongest:  Transformer (9/10)              ║
+║  Strongest:  Gaussian Splatting (9/10)       ║
+║  Drill:      51.5% → 86% (redo)             ║
+║  Summary:    4/10 → 9/10 (coached)           ║
+╠══════════════════════════════════════════════╣
+║  Terms Known:    0 / 38                      ║
+║  Terms Learning: 38                          ║
+║  Overall:        6% complete (3/50 days)     ║
+╠══════════════════════════════════════════════╣
+║  ★ LeCun JEPA explanation: 8/10              ║
+║  🔧 Focus: World Model, Manipulation        ║
+║  Next: Day 4 — The Current Landscape         ║
+╚══════════════════════════════════════════════╝
+```
+
+---
+
+## Analytics Dashboard
+
+Track your learning progress with a live Chart.js dashboard:
+
+**[View Live Dashboard](https://hanselhansel.github.io/ai-learning-engine/portfolio/analytics-dashboard.html)**
+
+- Mastery curve (known vs. learning terms over time)
+- Velocity trend (learning speed across sessions)
+- Confidence calibration (over/under-confident detection)
+- Pre-test to post-test delta
+
+Deploy your own via GitHub Pages (Settings → Pages → main branch).
+
+---
+
+## Concept Map
+
+```mermaid
+graph LR
+    subgraph "Foundations"
+        WM[World Model] -->|enables| STR[Sim-to-Real]
+        EAI[Embodied AI] -->|requires| P[Perception]
+        P -->|feeds| PL[Planning]
+        PL -->|drives| C[Control]
+        FM[Foundation Model] -->|type of| VLA
+    end
+    subgraph "Training"
+        RL[Reinforcement Learning] -->|variant| IL[Imitation Learning]
+        IL -->|uses| TEL[Teleoperation]
+        IL -->|evolves to| DP[Diffusion Policy]
+    end
+    subgraph "Hardware"
+        MAN[Manipulation] -->|uses| EE[End Effector]
+        LOC[Locomotion] -->|constrained by| DOF[Degrees of Freedom]
+        MORPH[Morphology] -->|defines| EG[Embodiment Gap]
+    end
+    subgraph "Infrastructure"
+        DT[Digital Twin] -->|bridges| STG[Sim-to-Real Gap]
+        GS[Gaussian Splatting] -->|replaced| NERF[NeRF]
+    end
+    WM -.->|analogous to| FM
+    VLA -->|combines| P & PL & C
+    CET[Cross-Embodiment Transfer] -.->|solves| EG
+    DSA[Dual-System Architecture] -->|combines| PL & C
+```
+
+---
+
+## How It Works
+
+```bash
+git clone https://github.com/hanselhansel/ai-learning-engine.git my-learning-project
+cd my-learning-project
+```
+
+1. **Clone the repo** (above)
+2. **Generate a curriculum**: Run `/generate-curriculum` and answer 5 questions — or copy an example from `examples/` and customize
+3. **Configure**: Copy `CURRICULUM-CONFIG-TEMPLATE.md` to `CURRICULUM-CONFIG.md` and fill in your learner bridges and preferences
+4. **Install skills**: Follow your platform's setup guide (see [Platform Setup](#platform-setup))
+5. **Start learning**: Type `/learn` — type `/learn-end` to save and exit early
+
+See `SETUP-GUIDE.md` for the full walkthrough.
 
 ---
 
@@ -51,6 +170,45 @@ Works with **Claude Code**, **OpenAI Codex**, **Cursor AI**, or any AI assistant
 
 ---
 
+## Flex Session Modes
+
+| Mode | Time | Best For |
+|------|------|----------|
+| **Micro** | 5 min | Coffee break, quick SM-2 review |
+| **Quick** | 15-20 min | Morning warmup, light practice |
+| **Standard** | 50-65 min | Full learning cycle (default) |
+| **Deep Dive** | 90-120+ min | Teach-back, concept linking, deep exploration |
+| **Synthesis** | 60-75 min | Every 5th session, integration challenge |
+
+### Block Composition by Mode
+
+| Block | Micro | Quick | Standard | Deep | Synthesis |
+|-------|-------|-------|----------|------|-----------|
+| Concept of the Day | x | x | x | x | x |
+| Pre-Test | - | - | x | x | - |
+| SM-2 Quiz | x | x | x | x | x |
+| Socratic Lesson | - | x (1-2) | x (5-7) | x (7) | - |
+| Interleaved Practice | - | - | x | x | x |
+| Portfolio Exercise | - | - | x | x | x |
+| Teach-Back | - | - | - | x | - |
+| Concept Linking | - | - | - | x | x |
+| Mastery Check | - | - | x | x | x |
+
+---
+
+## Curriculum Gallery
+
+Pre-built curricula ready to fork:
+
+| Curriculum | Duration | Sessions | Target Audience |
+|------------|----------|----------|-----------------|
+| [Spatial AI](examples/spatial-ai/) | 10 weeks | ~50 | Technical PM, BD, investors |
+| [Financial Modeling](examples/financial-modeling/) | 4 weeks | ~20 | Business professionals, analysts |
+| [Product Management](examples/product-management/) | 6 weeks | ~30 | Engineers transitioning to PM |
+| [Machine Learning](examples/machine-learning/) | 8 weeks | ~40 | Software engineers learning ML |
+
+---
+
 ## Architecture: Hub-and-Spoke
 
 ```
@@ -70,24 +228,6 @@ skills/learn/
 ```
 
 SKILL.md says "Read `references/sm2-algorithm.md` for update rules" — Claude loads on demand. Quick/Micro modes never load teach-back or concept-linking files. This saves ~40% tokens vs monolithic skills.
-
----
-
-## Quick Start
-
-```bash
-git clone https://github.com/hanselhansel/ai-learning-engine.git my-learning-project
-cd my-learning-project
-```
-
-1. **Generate a curriculum**: Run `/generate-curriculum` and answer 5 questions
-   - OR copy an example from `examples/` and customize
-2. **Configure**: Copy `CURRICULUM-CONFIG-TEMPLATE.md` to `CURRICULUM-CONFIG.md` and fill in your learner bridges and preferences
-3. **Install skills**: Follow your platform's setup guide (see [Platform Setup](#platform-setup))
-4. **Start learning**: Type `/learn`
-5. **End early**: Type `/learn-end` (saves partial progress)
-
-See `SETUP-GUIDE.md` for the full walkthrough.
 
 ---
 
@@ -147,45 +287,6 @@ Score: 7.5/10. Above threshold. Advancing to Session 13.
 
 ---
 
-## Flex Session Modes
-
-| Mode | Time | Best For |
-|------|------|----------|
-| **Micro** | 5 min | Coffee break, quick SM-2 review |
-| **Quick** | 15-20 min | Morning warmup, light practice |
-| **Standard** | 50-65 min | Full learning cycle (default) |
-| **Deep Dive** | 90-120+ min | Teach-back, concept linking, deep exploration |
-| **Synthesis** | 60-75 min | Every 5th session, integration challenge |
-
-### Block Composition by Mode
-
-| Block | Micro | Quick | Standard | Deep | Synthesis |
-|-------|-------|-------|----------|------|-----------|
-| Concept of the Day | x | x | x | x | x |
-| Pre-Test | - | - | x | x | - |
-| SM-2 Quiz | x | x | x | x | x |
-| Socratic Lesson | - | x (1-2) | x (5-7) | x (7) | - |
-| Interleaved Practice | - | - | x | x | x |
-| Portfolio Exercise | - | - | x | x | x |
-| Teach-Back | - | - | - | x | - |
-| Concept Linking | - | - | - | x | x |
-| Mastery Check | - | - | x | x | x |
-
----
-
-## Curriculum Gallery
-
-Pre-built curricula ready to fork:
-
-| Curriculum | Duration | Sessions | Target Audience |
-|------------|----------|----------|-----------------|
-| [Spatial AI](examples/spatial-ai/) | 10 weeks | ~50 | Technical PM, BD, investors |
-| [Financial Modeling](examples/financial-modeling/) | 4 weeks | ~20 | Business professionals, analysts |
-| [Product Management](examples/product-management/) | 6 weeks | ~30 | Engineers transitioning to PM |
-| [Machine Learning](examples/machine-learning/) | 8 weeks | ~40 | Software engineers learning ML |
-
----
-
 ## Research Basis
 
 This engine implements techniques from learning science research:
@@ -197,26 +298,6 @@ This engine implements techniques from learning science research:
 - **Teach-back** — explaining to others achieves 90% retention (vs 10% lecture)
 - **Confidence calibration** — metacognitive awareness improves learning efficiency
 - **Testing effect** — retrieval practice is more effective than re-reading
-
----
-
-## File Structure
-
-```
-your-curriculum/
-├── CURRICULUM.md              # Master lesson plan (read-only reference)
-├── CURRICULUM-CONFIG.md       # Your personalized settings
-├── SESSION-STATE.md           # Progress tracker (auto-updated)
-├── progress.md                # Daily learning log
-├── COMMUNITIES.md             # Community engagement tracker
-├── portfolio/                 # Portfolio artifacts + analytics dashboard
-├── sessions/
-│   ├── summaries/             # Per-session receipt cards
-│   └── archive/               # Archived state history
-├── assessments/               # Phase gate results
-├── swot/                      # SWOT self-assessments
-└── build-project/             # Portfolio project files
-```
 
 ---
 
@@ -264,6 +345,26 @@ The engine uses session numbers, not calendar days. Pick up where you left off. 
 
 **Q: How do I upgrade from v1 or v2?**
 See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md). Your progress is preserved — terminology, position, and session history all carry forward.
+
+---
+
+## File Structure
+
+```
+your-curriculum/
+├── CURRICULUM.md              # Master lesson plan (read-only reference)
+├── CURRICULUM-CONFIG.md       # Your personalized settings
+├── SESSION-STATE.md           # Progress tracker (auto-updated)
+├── progress.md                # Daily learning log
+├── COMMUNITIES.md             # Community engagement tracker
+├── portfolio/                 # Portfolio artifacts + analytics dashboard
+├── sessions/
+│   ├── summaries/             # Per-session receipt cards
+│   └── archive/               # Archived state history
+├── assessments/               # Phase gate results
+├── swot/                      # SWOT self-assessments
+└── build-project/             # Portfolio project files
+```
 
 ---
 
