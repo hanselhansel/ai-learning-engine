@@ -9,19 +9,18 @@
 ## [YOUR TOPIC] Curriculum (COMMANDS)
 
 When I say "let's learn", "learn", "today's lesson", "next lesson", "continue learning", "resume lesson", or "start lesson":
-1. Read `[PATH_TO_CURRICULUM]/SESSION-STATE.md` (single source of truth)
-2. Read `[PATH_TO_CURRICULUM]/CURRICULUM.md` (find the section matching "Next Session Plan")
-3. If it exists, load the pre-read at `[PATH_TO_CURRICULUM]/sessions/day-XX-session.md`
-4. Run the full session protocol from the `learn` skill
+1. Read `[PATH_TO_CURRICULUM]/CURRICULUM-CONFIG.md` (curriculum config)
+2. Read `[PATH_TO_CURRICULUM]/SESSION-STATE.md` (single source of truth)
+3. Read `[PATH_TO_CURRICULUM]/CURRICULUM.md` (find section matching "Next Session Plan")
+4. Run the adaptive learning engine from the `learn` skill
+
+**Session flow (v2 — evidence-based):**
+Pre-test (5 min) → SM-2 spaced repetition quiz (10 min) → Socratic lesson (25-30 min) → Interleaved practice (10 min) → Portfolio exercise (10-15 min) → Community (5 min) → Reflect + mastery check (5 min). Total: ~65-75 min.
 
 **End-of-session auto-actions (EVERY session, no command needed):**
-1. Update SESSION-STATE.md (advance day, log session, update terminology tracker, set flags)
+1. Update SESSION-STATE.md (advance session, update SM-2 tracker, velocity dashboard, set flags)
 2. Update progress.md
-3. Commit and push to GitHub (if repo is set up)
-4. **AUTO-GENERATE next day's pre-read** at `sessions/day-XX-session.md` with:
-   - Web search for latest developments in the topic area
-   - Papers, news, company announcements relevant to next day's topics
-5. Commit and push the pre-read
+3. Commit and push to GitHub
 
 When I say "learn-end", "end lesson", "stop learning", "done learning", "save progress", "wrap up lesson", "pause lesson", or "that's enough for today":
 - **Use ONLY for mid-session exits** (need to leave before lesson finishes)

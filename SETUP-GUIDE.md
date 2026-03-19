@@ -1,13 +1,13 @@
 # Setup Guide
 
-Step-by-step instructions to create your own AI-powered curriculum.
+Step-by-step instructions to create your own AI-powered curriculum using the Adaptive Learning Engine v2.
 
 ---
 
 ## Step 1: Fork or Clone This Repo
 
 ```bash
-git clone https://github.com/[YOUR_USERNAME]/ai-learning-engine.git my-learning-project
+git clone https://github.com/hanselhansel/ai-learning-engine.git my-learning-project
 cd my-learning-project
 ```
 
@@ -18,7 +18,7 @@ Or click "Use this template" on GitHub.
 Open `CURRICULUM-TEMPLATE.md` and fill it in:
 
 1. **Define your goal.** What does "done" look like? Be specific: "Get hired as X", "Ship project Y", "Pass certification Z".
-2. **Set the timeline.** How many weeks? How many hours per day? This determines your total day count.
+2. **Set the timeline.** How many weeks? How many hours per day? This determines your total session count.
 3. **Define phases.** Recommended structure:
    - Phase 1: Foundations (build mental model)
    - Phase 2: Technical Literacy (go deeper)
@@ -26,60 +26,70 @@ Open `CURRICULUM-TEMPLATE.md` and fill it in:
    - Phase 4: Portfolio + Networking (demonstrate and connect)
 4. **Write day-by-day content.** For each day, include:
    - Core question (the one thing this day answers)
-   - Topics table
-   - Readings / resources
-   - Exercise (hands-on, bridges to existing knowledge)
+   - Topics table (max 7 concepts per day — the engine splits larger days across sessions)
+   - Resources
+   - Exercise (bridges to existing knowledge)
 5. **Define phase gates.** What does the learner need to demonstrate before advancing?
 6. **List terminology.** Group terms into Tier 1 (must-know) and Tier 2 (know by end of phase).
 
-Save as `CURRICULUM.md` (replace the template).
+Save as `CURRICULUM.md`.
 
-## Step 3: Set Up Session State
+## Step 3: Configure the Engine (NEW in v2)
+
+Open `CURRICULUM-CONFIG-TEMPLATE.md` and customize:
+
+1. **Curriculum Identity**: Set file paths to match your folder structure
+2. **Learner Bridges**: List your existing expertise that connects to new material
+3. **Exercise Types**: Define the portfolio artifact formats for your field
+4. **Mastery Thresholds**: Set per-phase pass/fail scores
+5. **Tone & Style**: How you want the AI to communicate
+
+Save as `CURRICULUM-CONFIG.md`.
+
+## Step 4: Set Up Session State
 
 Open `SESSION-STATE.md` and customize:
 - Replace `[YOUR TOPIC]` with your topic
-- Set `[TOTAL_DAYS]` to your curriculum's total day count
-- Update the Phase names in Assessment Scores table
-- Leave everything else as-is (Claude fills it in during sessions)
+- Set `[TARGET_SESSIONS]` (estimate: ~1.3x your curriculum day count, since multi-concept days split)
+- Update Phase names in Assessment Scores table
+- Leave the SM-2 tracker empty — the engine fills it during sessions
 
-## Step 4: Set Up Communities (Optional)
+## Step 5: Set Up Communities (Optional)
 
 Open `COMMUNITIES-TEMPLATE.md` and:
 - Research 8-10 communities in your field (Discord, Reddit, X/Twitter, newsletters)
 - Fill in the tables
 - Save as `COMMUNITIES.md`
 
-## Step 5: Install the Skills
+## Step 6: Install the Skills
 
 ### Option A: Claude Code / Cowork (Recommended)
 
 Copy the skill folders into your Claude skills directory:
 
 ```bash
-cp -r skills/learn ~/.claude/skills/curriculum-learn
-cp -r skills/learn-end ~/.claude/skills/curriculum-learn-end
+cp -r skills/learn ~/.claude/skills/learn
+cp -r skills/learn-end ~/.claude/skills/learn-end
 ```
-
-Or if using Cowork, copy to your `.skills/skills/` folder.
 
 ### Option B: CLAUDE.md Integration
 
-If you prefer natural language triggers instead of slash commands:
+If you prefer natural language triggers:
 1. Open `CLAUDE-SNIPPET.md`
 2. Copy the content
-3. Paste it into your project's `CLAUDE.md` file
-4. Replace all `[BRACKETED]` values with your actual paths
+3. Paste into your project's `CLAUDE.md` file
+4. Replace all `[BRACKETED]` values with your paths
 
-## Step 6: Populate Research Reference (Optional)
+## Step 7: Populate Research Reference (Optional)
 
 Open `RESEARCH-REFERENCE.md` and:
 - Run web searches for your topic's latest data
 - Fill in companies, metrics, papers, events
 - Include timestamps for all data points
 
-Claude uses this file as source of truth during sessions. Keeps your lessons current.
+The engine uses this file as source of truth during sessions.
 
-## Step 7: Commit and Start Learning
+## Step 8: Commit and Start Learning
 
 ```bash
 git add .
@@ -95,25 +105,27 @@ Then open Claude and type: **"let's learn"**
 
 ```
 your-curriculum/
-+-- CURRICULUM.md              <- Your filled-in curriculum
-+-- SESSION-STATE.md           <- Session state (auto-managed by Claude)
-+-- COMMUNITIES.md             <- Your community tracker
-+-- RESEARCH-REFERENCE.md      <- Verified data for your topic
-+-- progress.md                <- Daily learning log (auto-updated)
-+-- skills/
-|   +-- learn/SKILL.md         <- Session runner skill
-|   +-- learn-end/SKILL.md     <- Session exit skill
-+-- sessions/                  <- Pre-read files (auto-generated)
-+-- assessments/               <- Phase gate results
-+-- swot/                      <- Self-assessments
-+-- build-project/             <- Portfolio project files
-+-- outreach/                  <- Networking tracker
+├── CURRICULUM.md              <- Your filled-in curriculum
+├── CURRICULUM-CONFIG.md       <- Engine configuration (NEW in v2)
+├── SESSION-STATE.md           <- Session state (auto-managed)
+├── COMMUNITIES.md             <- Your community tracker
+├── RESEARCH-REFERENCE.md      <- Verified data for your topic
+├── progress.md                <- Session log (auto-updated)
+├── skills/
+│   ├── learn/SKILL.md         <- Adaptive learning engine
+│   └── learn-end/SKILL.md    <- Session exit handler
+├── portfolio/                 <- Portfolio artifacts (NEW in v2)
+├── sessions/                  <- Session archives
+├── assessments/               <- Phase gate results
+├── swot/                      <- Self-assessments
+├── build-project/             <- Portfolio project files
+└── outreach/                  <- Networking tracker
 ```
 
 ## Tips
 
-- **Don't over-plan.** Write Phase 1 in detail, outline Phase 2-4 at a higher level, and refine as you learn.
-- **Use the bridge.** Every concept should connect to something you already know. Write these bridges into your curriculum.
-- **Trust the state machine.** Don't manually edit SESSION-STATE.md unless something breaks. Let Claude manage it.
-- **Review pre-reads.** Claude auto-generates next-day material. Skim it before your session for better retention.
-- **Commit often.** Your learning history is a portfolio piece. Show consistent daily progress.
+- **Don't over-plan.** Write Phase 1 in detail, outline Phase 2-4 at a higher level, refine as you learn.
+- **Use the bridges.** Every concept should connect to something you already know. Write these into CURRICULUM-CONFIG.md.
+- **Trust the state machine.** Don't manually edit SESSION-STATE.md unless something breaks.
+- **Commit often.** Your learning history is a portfolio piece.
+- **Do multiple sessions.** Sessions are decoupled from calendar days. Go as fast as you want.

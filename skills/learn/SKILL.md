@@ -1,145 +1,213 @@
-# Skill: Curriculum Session Runner
+---
+name: learn
+description: Resume and run the current curriculum session. Adaptive learning engine with SM-2 spaced repetition, Socratic method, pre-testing, confidence calibration, and mastery-based progression. Triggers on "let's learn", "learn", "next lesson", "continue learning", "resume lesson", "start lesson", "today's lesson", "spatial AI lesson", or anything suggesting the learner wants to continue their curriculum. Also triggers on "/learn".
+---
 
-## Metadata
-- **Name:** learn
-- **Description:** Start or resume a daily curriculum session. Loads your position, runs quiz + lesson + drill + reflect, updates all tracking files.
-- **Triggers:** "let's learn", "start lesson", "today's lesson", "next lesson", "continue learning", "resume lesson"
+# Adaptive Learning Engine
 
-## Prerequisites
-Before using this skill, you must have:
-1. A `CURRICULUM.md` with your full curriculum content
-2. A `SESSION-STATE.md` (use the template from this repo)
-3. A `progress.md` file
-4. A `RESEARCH-REFERENCE.md` (optional but recommended)
-5. These files in a folder structure as described in the README
+Evidence-based session runner. Reads a curriculum config, loads state, and guides the learner through an optimized session flow.
 
-## Execution Protocol
+## Step 1: Load Curriculum Config (MANDATORY FIRST STEP)
 
-### Step 1: Load Session State (MANDATORY)
+Read `CURRICULUM-CONFIG.md` from the curriculum directory specified in CLAUDE.md.
 
-Read `SESSION-STATE.md` in the curriculum folder. This is the single source of truth. Extract:
-- **Next Session Plan** (tells you exactly what to teach)
-- **Days Completed** (progress counter)
-- **Terminology Mastery Tracker** (which terms are weak, which are known)
-- **Pending Questions** (unresolved items from previous sessions)
-- **Flags for Next Session** (corrections, follow-ups, reminders)
-- **Community Activity Summary** (engagement tracking)
-- **Build Project** status
-- **Assessment Scores** (phase gate results)
+Extract:
+- **File paths**: curriculum_file, state_file, progress_file, portfolio_dir, communities_file, research_reference
+- **Learner bridges**: existing knowledge to connect new concepts to
+- **Exercise types**: portfolio artifact formats
+- **Mastery thresholds**: per-phase pass/fail scores
+- **Tone**: communication style
 
-### Step 2: Load Today's Lesson + Research
+## Step 2: Load Session State
 
-Read BOTH:
-1. `CURRICULUM.md` - find the section matching the "Next Session Plan" field
-2. `RESEARCH-REFERENCE.md` - use as source of truth for any numbers, dates, valuations
-3. `sessions/day-XX-session.md` - if a pre-read exists for today's day number
+Read the `state_file` (SESSION-STATE.md). This is the **single source of truth**.
 
-If RESEARCH-REFERENCE.md exists, prefer its data over your training data for anything that changes over time (funding rounds, product releases, market size, etc.).
+Extract:
+- **Next Session Plan**: exactly what to teach today
+- **Sessions Completed**: progress counter
+- **Current Curriculum Day**: maps to CURRICULUM.md day numbering
+- **Terminology Mastery Tracker**: SM-2 fields (interval, next_review, ease, confidence, status)
+- **Pending Questions**: unresolved from previous sessions
+- **Flags for Next Session**: items to surface at start
+- **Learning Velocity Dashboard**: trend data
+- **Community Activity**, **Build Project**, **Assessment Scores**
 
-### Step 3: Open Session
+If "Sessions Completed" shows 0, this is the first session.
 
-Brief greeting with:
-- Day number (e.g., "Day 7 of 50")
+## Step 3: Load Today's Lesson
+
+Read the `curriculum_file` (CURRICULUM.md). Find the section matching "Next Session Plan."
+
+If the curriculum day has more than 7 new concepts, plan to cover only 7 this session. The remaining concepts carry to the next session (multi-session day).
+
+## Step 4: Open Session
+
+Greet the learner briefly:
+- Session number and approximate total (e.g., "Session 5 of ~65")
 - Today's topic title
-- Surface any flags from last session (corrections, reminders)
-- Surface pending questions first and address or defer them
+- Any flags from last session (corrections, weak terms, pending deliverables)
+- If pending questions exist, surface them
 
-Keep the opening under 5 lines. No fluff.
+## Step 5: Pre-Test on NEW Material (5 min)
 
-### Step 4: Run Session Blocks
+**Before teaching ANY new concept**, generate 3-5 questions about today's upcoming material from the curriculum.
 
-#### A. Review Quiz (15 min, skip on Day 1)
-- 10-term flashcard quiz from previous days' terminology
-- Prioritize terms NOT yet marked "known" (correct 3+ times)
-- Score each answer 1-10 with brief feedback
-- Record results in Terminology Mastery Tracker
-- If this is a Phase Gate day, run the full assessment instead (see Assessment section in CURRICULUM.md)
+These questions test concepts the learner has NOT been taught yet. The learner will get most wrong — **that's the point**. The pretesting effect (errors before learning create stronger memory traces than reading before learning).
 
-**Quiz format:**
+For each question:
+1. Pose the question, connecting to learner bridges where possible
+2. Let the learner attempt an answer
+3. Do NOT reveal the correct answer yet — say "We'll come back to this during the lesson"
+4. Record: question, learner's attempt, correct answer
+
+Use these pre-test results during the Socratic Lesson (Step 7) to highlight what the learner got right and wrong.
+
+## Step 6: Spaced Repetition Quiz (10 min)
+
+Use the SM-2 algorithm to select terms for review.
+
+### Term Selection
+1. From the Terminology Mastery Tracker, find all terms where `next_review <= today`
+2. If more than 10 terms are due: prioritize by (a) most days overdue first, (b) then lowest ease factor
+3. Cap at 10 terms per session. Overflow rolls to next session automatically.
+
+### Quiz Flow (for each term)
+1. Give the term
+2. Learner explains it
+3. **Before revealing if correct**: ask learner to rate confidence (1-5)
+4. Score: correct or incorrect
+5. Reveal correct answer, noting what was right/wrong
+
+### SM-2 Update (for each term after scoring)
 ```
-Term 1: [TERM]
-Your answer: [learner responds]
-Score: X/10
-Feedback: [what was right, what was missing, how to remember it]
+If correct:
+  ease_factor = max(1.3, ease_factor + 0.1)
+  interval = max(1, round(previous_interval * ease_factor))
+  next_review = today + interval days
+
+If wrong:
+  ease_factor = max(1.3, ease_factor - 0.2)
+  interval = 1
+  next_review = tomorrow
 ```
 
-After all 10: calculate average, compare to target (7/10), note weak areas.
+### Confidence Calibration
+- confidence >= 4 AND wrong → log "overconfident" (dangerous blind spot — flag for extra review)
+- confidence <= 2 AND correct → log "underconfident" (learner knows more than they think)
+- otherwise → log "calibrated"
 
-#### B. Today's Lesson (60-90 min)
-- Teach interactively, NOT as a wall of text
-- Bridge every concept to the learner's existing knowledge (stated in CURRICULUM.md)
-- Use tables, comparisons, concrete examples
-- Ask comprehension questions throughout (don't just lecture)
-- Use web search for latest data when relevant
-- If the learner gives a wrong answer, correct immediately with the right mental model
+### Phase Gate Days
+If this is a **Phase Gate session** (end of a phase, per curriculum), run the full gate assessment instead of the regular quiz. See CURRICULUM.md for gate-specific instructions.
 
-**Teaching principles:**
-1. Start with the "why" (why does this matter?)
-2. Give the concept (what is it?)
-3. Bridge it (how does it connect to what you already know?)
-4. Test it (can you explain it back?)
-5. Apply it (how would you use this?)
+## Step 7: Socratic Lesson (25-30 min)
 
-#### C. Drill Exercise (30 min)
-- Run the exercise specified in CURRICULUM.md for today's day
-- Provide feedback on the output
-- Save any written deliverables to the correct subfolder (build-project/, assessments/, etc.)
+**CRITICAL RULE: NEVER explain a concept before the learner has attempted to reason about it.**
 
-#### D. Community Check-in (10 min)
-- Phase 1-2: Ask what the learner noticed while lurking communities
-- Phase 3+: Review engagement metrics, suggest next actions
-- Update COMMUNITIES.md with any new activity
+For EACH new concept (max 7 per session):
 
-#### E. Reflect & Close (15 min)
-- Ask the learner for an "explain it to [target audience]" summary (2-3 sentences)
-- Score the summary 1-5 on clarity and accuracy
-- Suggest 2-3 follow-up questions or areas to explore
-- Flag items for next session (corrections, weak terms, unresolved questions)
+1. **Bridge question**: Pose a question connecting the concept to the learner's existing knowledge (from learner_bridges in config).
+   - Example: "How would your 16 Claude agents 'see' a physical room? What information would they need?"
 
-### Step 5: Update Tracking Files (MANDATORY)
+2. **Learner generates**: Let them attempt an answer. Don't interrupt.
 
-**SESSION-STATE.md** - update ALL of the following:
-- Current Phase/Week/Day: advance to today's completed values
-- Next Session Plan: set to the NEXT day's topic
-- Days Completed: increment by 1
-- Last Session Date: today's date
-- Session Log (Last 5): add entry with date, phase/day, duration, key topics, notes
-- Terminology Mastery Tracker: update scores from today's quiz, add new terms
-- Community Activity Summary: log any community activity
-- Pending Questions: add new, resolve answered
-- Flags for Next Session: clear resolved flags, add new ones
+3. **Reveal**: Explain the concept, highlighting:
+   - What they got right
+   - What they missed
+   - Connect to their pre-test answer if they attempted this concept in Step 5
 
-**progress.md** - add entry with:
-- Date, phase/day, topics covered, key insight, questions
-- Update "explain it to [audience]" notes if the learner produced a good summary
+4. **Deeper follow-up**: Ask ONE follow-up question that goes one level deeper.
 
-**Phase Gate days only:**
-- Save assessment results to `assessments/`
-- Save SWOT to `swot/`
+Use web search for the latest data, funding rounds, and product launches during the lesson.
 
-### Step 6: Auto-Generate Next Day's Pre-Read
+## Step 8: Interleaved Practice (10 min)
 
-After updating tracking files, generate `sessions/day-XX-session.md` for the NEXT day with:
-- Flags from this session
-- Quiz terms to review
-- Latest web search results relevant to tomorrow's topics
-- Key readings/links
-- Exercise preview
+Pose 3 problems that mix today's concepts with concepts from at least 2 previous sessions.
 
-### Step 7: Git Commit & Push (if applicable)
+**Important**: Reference CURRICULUM.md for concept CONTENT (not just term definitions from the tracker). Terms are shallow; concepts have depth.
 
-```bash
-git add [curriculum-folder]/
-git commit -m "Curriculum session: Phase X, Week Y, Day Z - [brief topic]"
+Example: "Company X uses [Session 3 concept: imitation learning] to train robots for [today's concept: warehouse manipulation]. What's the business case using [Session 2 concept: the convergence thesis]?"
+
+This forces CONNECTION and TRANSFER, not just recall.
+
+## Step 9: Portfolio Exercise (10-15 min)
+
+Use `exercise_types` from the config to frame the drill as a REAL artifact.
+
+NOT: "Write a 1-page comparison of VLA approaches"
+YES: "Draft a LinkedIn post explaining why VLAs are the transformer moment for robotics"
+
+Every output should be something the learner could actually use — for networking, job applications, portfolio, or content creation.
+
+Save output to the `portfolio_dir` specified in config.
+
+## Step 10: Community Check-in (5 min)
+
+- Phase 1-2: "What did you notice lurking? Interesting threads? People? Topics?"
+- Phase 3+: Review engagement plan. Posts? Replies? Connections?
+- Log activity in the `communities_file` from config
+
+## Step 11: Reflect + Mastery Check (5 min)
+
+### a) Founder Summary
+Ask the learner for an "explain it to a founder" summary (2-3 sentences they could use at a networking event). This is a generation exercise — they produce it from memory, not from notes.
+
+### b) Mastery Gate
+Score today's new concepts (quick verbal check on each):
+- Use the threshold from config (`mastery_thresholds`)
+- **Below threshold**: Run 10-min targeted remediation on weak concepts only. Then re-test.
+- **Fail twice**: ADVANCE anyway. Flag weak concepts as "needs extra spaced repetition" in the tracker. Do NOT block progression indefinitely.
+- **Above threshold**: Advance to next session.
+
+### c) Flags
+- Flag items for next session (corrections, weak terms, pending deliverables)
+- Suggest 2-3 high-value follow-up questions aligned to learner profile
+
+## Step 12: Weekly Synthesis Challenge (every 5th session)
+
+On sessions 5, 10, 15, 20, 25... **replace** Interleaved Practice (Step 8) and Portfolio Exercise (Step 9) with a 20-minute Synthesis Challenge:
+
+1. Pose a question requiring integration of ALL concepts from the current week
+2. The question should require application and transfer, not just recall
+3. Output = a real networking/portfolio artifact (saved to portfolio_dir)
+
+Example: "A VC asks you: What's the single biggest technical risk in spatial AI and why should I invest anyway? Answer using concepts from all 5 sessions this week."
+
+## Step 13: Update State + Commit (MANDATORY)
+
+### Update SESSION-STATE.md:
+- Advance session counter (only if mastery gate passed or escape valve triggered)
+- Set "Current Curriculum Day" based on session-to-day mapping
+- Set "Next Session Plan" to next session's content
+- Update "Last Session Date"
+- Add entry to "Session Log (Last 5)"
+- Update Terminology Mastery Tracker with SM-2 fields for all quizzed terms
+- Add new terms from today's lesson (set: interval=1, next_review=tomorrow, ease=2.5, status=New)
+- Update Confidence Calibration Summary
+- Update Pre-Test Results table
+- Update Learning Velocity Dashboard
+- Update Community Activity, Pending Questions, Flags
+
+### Update progress.md:
+Add today's entry with: date, session#, curriculum day, topics covered, key insight, pre-test score, questions.
+
+### Phase Gate days also update:
+- assessments/ folder with scored results
+- swot/ folder (if applicable)
+- Assessment Scores table in SESSION-STATE.md
+
+### Git Commit & Push:
+```
+git add [curriculum_dir from config]
+git commit -m "Curriculum session: Session X - [brief topic]"
 git push
 ```
 
 ## Key Rules
 
-1. **Zero fluff.** Direct tone, structured output.
-2. **Quantify everything.** Quiz scores, term counts, completion percentages.
-3. **Zero hallucinations.** If unsure about data, say so. Use RESEARCH-REFERENCE.md.
-4. **Bridge constantly.** Every new concept maps to existing knowledge.
-5. **Don't lecture.** Ask questions throughout. Make it a conversation.
-6. **Respect the state machine.** Never skip days. Never advance without completing all blocks.
-7. **Always update tracking.** SESSION-STATE.md is updated every session, no exceptions.
+- **Socratic first**: Never explain before the learner attempts. Ask, then reveal.
+- **Concept cap**: Max 7 new concepts per session. Split multi-concept days across sessions. Depth over breadth.
+- **Zero hallucination**: Say "unsure" if unsure. Use web search for current data.
+- **Quantify everything**: Market sizes, funding, growth rates, multiples.
+- **Portfolio output**: Every exercise produces a real, usable artifact.
+- **SM-2 discipline**: Always update the tracker. Bounds: ease >= 1.3, interval >= 1.
+- **Session numbering**: Use session numbers, not day numbers. Learner can do multiple sessions per sitting.

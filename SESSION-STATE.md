@@ -1,13 +1,12 @@
 # Session State: [YOUR TOPIC] Curriculum
 
-> **CLAUDE AUTO-RESUME PROTOCOL:**
-> 1. When the learner says "let's learn" or similar, READ THIS FILE FIRST.
-> 2. Look at "Next Session Plan" below to know exactly what to teach today.
-> 3. Load the corresponding section from `CURRICULUM.md` AND the pre-read at `sessions/day-XX-session.md`.
-> 4. Run the session (quiz on previous day if Day 2+, then lesson, drill, community check, reflect).
-> 5. At session end: advance "Current Day", update "Next Session Plan", log the session, and commit/push.
-> 6. **AUTO-GENERATE NEXT DAY PRE-READ**: After committing, immediately generate the next day's `sessions/day-XX-session.md` with web/paper/social research for latest data.
-> 7. The learner should NEVER need to specify phase/week/day. This file is the single source of truth.
+> **AUTO-RESUME PROTOCOL:**
+> 1. When learner says "let's learn" or similar, READ THIS FILE FIRST.
+> 2. Read CURRICULUM-CONFIG.md for file paths and settings.
+> 3. Look at "Next Session Plan" below to know exactly what to teach.
+> 4. Run the full session protocol from the learn skill (pre-test → SR quiz → Socratic lesson → practice → portfolio → mastery check).
+> 5. At session end: advance session counter, update all trackers, commit/push.
+> 6. Learner should NEVER need to specify session number. This file is the single source of truth.
 
 ## Current Position
 
@@ -15,10 +14,10 @@
 |-------|-------|
 | **Current Phase** | Phase 1: [First Phase Name] |
 | **Current Week** | Week 1 |
-| **Current Day** | Day 1 |
+| **Current Curriculum Day** | Day 1 |
+| **Sessions Completed** | 0 / ~[TARGET_SESSIONS] |
 | **Last Session Date** | - |
 | **Next Session Plan** | Phase 1, Week 1, Day 1: [First Topic] |
-| **Days Completed** | 0 / [TOTAL_DAYS] |
 
 ## Assessment Scores
 
@@ -31,29 +30,48 @@
 
 ## SWOT Evolution
 
-| SWOT | Date | Top Strength | Top Weakness | Top Opportunity | Top Threat |
-|------|------|-------------|-------------|----------------|-----------|
-| #1 (Phase 1) | - | - | - | - | - |
-| #2 (Phase 2) | - | - | - | - | - |
-| #3 (Phase 4) | - | - | - | - | - |
+| SWOT | Date | Top Strength | Top Weakness | Top Threat |
+|------|------|-------------|-------------|-----------|
+| #1 (Phase 1) | - | - | - | - |
+| #2 (Phase 2) | - | - | - | - |
+| #3 (Phase 4) | - | - | - | - |
 
 ## Pending Questions
-
-Questions that came up during sessions that need follow-up research:
 
 | # | Question | Raised On | Resolved? | Answer |
 |---|----------|-----------|-----------|--------|
 | | | | | |
 
-## Terminology Mastery Tracker
+## Terminology Mastery Tracker (SM-2)
 
-Terms marked as "known" after being correctly answered 3+ times in quizzes.
+Terms are reviewed using spaced repetition. `next_review` determines when a term appears in the quiz.
+- **Known**: 3+ correct, ease > 2.3
+- **Learning**: 1-2 correct or ease <= 2.3
+- **New**: 0 correct, not yet quizzed
 
-### Day 1 Terms (Quizzed in D2)
+### Session 1 Terms
 
-| Term | Times Correct | Status | Notes |
-|------|--------------|--------|-------|
-| | | | |
+| Term | Session | Correct | Interval | Next Review | Ease | Confidence | Status | Notes |
+|------|---------|---------|----------|-------------|------|------------|--------|-------|
+| | | | | | | | | |
+
+## Confidence Calibration Summary
+
+| Session | Calibrated | Overconfident | Underconfident | Total |
+|---------|-----------|---------------|----------------|-------|
+| | | | | |
+
+## Pre-Test Results
+
+| Session | Curriculum Day | Questions | Correct Before | Correct After |
+|---------|---------------|-----------|---------------|---------------|
+| | | | | |
+
+## Learning Velocity Dashboard
+
+| Session | Concepts Mastered | Avg Ease Trend | Calibration % | Pre-Test Δ | Est. Sessions Remaining |
+|---------|------------------|----------------|---------------|------------|------------------------|
+| | | | | | |
 
 ## Community Activity Summary
 
@@ -81,12 +99,10 @@ Terms marked as "known" after being correctly answered 3+ times in quizzes.
 
 ## Session Log (Last 5)
 
-| Date | Phase/Day | Duration | Key Topics | Notes |
-|------|-----------|----------|-----------|-------|
-| | | | | |
+| Date | Session | Curriculum Day | Duration | Key Topics | Notes |
+|------|---------|---------------|----------|-----------|-------|
+| | | | | | |
 
 ## Flags for Next Session
-
-Things Claude should bring up at the start of the next session:
 
 - (none yet)
