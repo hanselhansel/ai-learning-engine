@@ -185,8 +185,8 @@
                 el('div', { className: 'label', textContent: 'Interview Readiness' }),
                 el('div', { className: 'value', textContent: ir.composite + '%' }),
                 el('div', { cssText: 'display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:8px' }, [
-                    el('div', { cssText: 'width:' + ir.content + '%;background:#38bdf8' }),
-                    el('div', { cssText: 'width:' + ir.articulation + '%;background:#fb923c' })
+                    el('div', { cssText: 'width:' + (ir.content * 0.6).toFixed(1) + '%;background:#38bdf8' }),
+                    el('div', { cssText: 'width:' + (ir.articulation * 0.4).toFixed(1) + '%;background:#fb923c' })
                 ]),
                 el('div', { cssText: 'display:flex;justify-content:space-between;font-size:11px;margin-top:2px' }, [
                     el('span', { cssText: 'color:#38bdf8', textContent: 'Content ' + ir.content + '%' }),
@@ -288,7 +288,7 @@
                         { label: 'Specificity', data: SESSION_DATA.articulation.specificity, borderColor: '#22d3ee', backgroundColor: 'rgba(34,211,238,0.1)', fill: false, tension: 0.3 }
                     ]
                 },
-                options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, suggestedMin: 0, suggestedMax: 100 } } }
+                options: { ...chartDefaults, scales: { ...chartDefaults.scales, y: { ...chartDefaults.scales.y, suggestedMin: 0, suggestedMax: 5 } } }
             });
 
             // --- Compression Ratio (words/concept) ---
@@ -311,8 +311,8 @@
                 data: {
                     labels: SESSION_DATA.articulation.sessions,
                     datasets: [
-                        { label: 'Content', data: SESSION_DATA.articulation.interview_content, backgroundColor: '#38bdf8' },
-                        { label: 'Articulation', data: SESSION_DATA.articulation.interview_articulation, backgroundColor: '#fb923c' }
+                        { label: 'Content (60%)', data: SESSION_DATA.articulation.interview_content.map(function(v) { return v * 0.6; }), backgroundColor: '#38bdf8' },
+                        { label: 'Articulation (40%)', data: SESSION_DATA.articulation.interview_articulation.map(function(v) { return v * 0.4; }), backgroundColor: '#fb923c' }
                     ]
                 },
                 options: { ...chartDefaults, scales: { ...chartDefaults.scales, x: { ...chartDefaults.scales.x, stacked: true }, y: { ...chartDefaults.scales.y, stacked: true, max: 100 } } }

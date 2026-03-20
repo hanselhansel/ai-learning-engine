@@ -41,8 +41,9 @@ Claude plays a skeptical but fair colleague. Ask 2-3 follow-up questions:
 | **Business connect** | None | Mentioned | Compelling case |
 | **Conciseness** | 3x more words than needed | Some filler, could trim 30% | Every word earns its place |
 | **Persuasiveness** | States facts only | Has structure but weak evidence | Clear thesis + evidence + so-what |
+| **Specificity** | Vague generalities ("many companies") | Some names/numbers | Named companies, precise data, cited sources |
 
-Overall score = average of 6 dimensions.
+Overall score = average of 7 dimensions.
 - Score >= 4.0: "You could teach this at a meetup"
 - Score 3.0-3.9: "Solid. One area to sharpen: [specific]"
 - Score < 3.0: "Let's revisit. Here's what to focus on: [specific]"

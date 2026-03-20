@@ -24,7 +24,7 @@ Each exercise tagged with target audience. Scoring adjusts expectations: adjust 
 
 ## Rewrite Challenge Mechanic
 
-**Trigger:** Conciseness < 3 on any exercise.
+**Trigger:** Conciseness below `rewrite_threshold` (see `CURRICULUM-CONFIG.md`; default `3`).
 
 **Flow:**
 1. "Good content. Too many words. Rewrite in half the length."

@@ -128,7 +128,7 @@ CHECKPOINT
 
 ### DEEP DIVE MODE (90-120+ min)
 All Standard steps PLUS:
-7. **Teach-Back with Peer Simulation** (15-20 min): Read `references/teach-back-protocol.md`. If `articulation_scoring` enabled, also read `references/articulation-scoring.md`. Claude plays skeptical colleague. Score on 6 dimensions (Accuracy, Clarity, Depth, Business Connect, Conciseness, Persuasiveness). Log articulation scores to tracker.
+7. **Teach-Back with Peer Simulation** (15-20 min): Read `references/teach-back-protocol.md`. If `articulation_scoring` enabled, also read `references/articulation-scoring.md`. Claude plays skeptical colleague. Score on 7 dimensions (Accuracy, Clarity, Depth, Business Connect, Conciseness, Persuasiveness, Specificity). Log articulation scores to tracker.
 CHECKPOINT
 8. **Concept Linking** (10-15 min): Read `references/concept-linking.md`. Surface 3-5 connections, update concept links table, generate/update Mermaid map.
 9. **Community Check-in** (5-10 min): Phase-appropriate engagement.
