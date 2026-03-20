@@ -26,6 +26,26 @@ Connect new concepts to the learner's existing knowledge. The engine uses these 
 - **Data analysis**: Comfortable with SQL, analytics dashboards, and interpreting metrics -- can focus on product framing rather than data mechanics
 - **Agile/Scrum experience**: Worked in sprints, participated in stand-ups and retros -- understands the ceremonies from the engineering side
 
+## Learner Profile
+
+| Field | Value |
+|-------|-------|
+| **age_group** | Adult (18+) |
+| **experience_level** | Beginner |
+| **domain_expertise** | Software engineering background, understands technical systems but new to product strategy |
+| **persona** | Adult Beginner |
+
+## Learning Objective
+
+| Field | Value |
+|-------|-------|
+| **primary_goal** | Career/Job Prep |
+| **secondary_goals** | — |
+| **goal_weights** | career: 1.0 |
+| **career_target** | Transition from engineering to PM role |
+| **perspective_lenses** | ["interview readiness", "PM frameworks", "stakeholder communication", "product strategy"] |
+| **objective_statement** | I'm learning product management so I can transition from engineering to a PM role at a tech company |
+
 ## Exercise Types (Portfolio Artifacts)
 
 Every drill produces a real artifact the learner can use. Rotate through these formats:

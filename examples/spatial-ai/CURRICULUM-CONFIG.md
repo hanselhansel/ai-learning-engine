@@ -27,6 +27,26 @@ Connect new concepts to the learner's existing knowledge. The engine uses these 
 - **Business analysis**: Understands market sizing, competitive dynamics, and investment frameworks -- can evaluate robotics companies and business models with existing analytical tools
 - **General technical literacy**: Comfortable reading papers, parsing technical blog posts, and understanding system diagrams -- can engage with research-level material without needing simplified versions
 
+## Learner Profile
+
+| Field | Value |
+|-------|-------|
+| **age_group** | Adult (18+) |
+| **experience_level** | Professional |
+| **domain_expertise** | AI marketing agency operator, multi-agent Claude systems, investing frameworks (FCF, EV/EBITDA, Rule-of-40) |
+| **persona** | Professional |
+
+## Learning Objective
+
+| Field | Value |
+|-------|-------|
+| **primary_goal** | Career/Job Prep |
+| **secondary_goals** | Investment/Business |
+| **goal_weights** | career: 0.6, investment: 0.4 |
+| **career_target** | Get hired by a spatial AI company in SF |
+| **perspective_lenses** | ["interview readiness", "company landscape", "investment/valuation", "networking angles", "business strategy"] |
+| **objective_statement** | I'm learning spatial AI so I can get hired by a spatial AI company in SF, combining business strategy with technical understanding |
+
 ## Exercise Types (Portfolio Artifacts)
 
 Every drill produces a real artifact the learner can use. Rotate through these formats:

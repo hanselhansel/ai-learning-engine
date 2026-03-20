@@ -3,7 +3,7 @@ name: learn-end
 description: End and save progress for the current curriculum session. Use when the learner says "learn-end", "/learn-end", "end lesson", "stop learning", "wrap up lesson", "done learning", "save progress", "pause lesson", "that's enough for today", or anything suggesting they want to stop and save progress. Handles all 5 flex modes (Micro/Quick/Standard/Deep/Synthesis) and preserves partial progress.
 ---
 
-# End Learning Session (v3)
+# End Learning Session (v4)
 
 Gracefully close a session at any point. Captures progress, saves state, ensures seamless resume.
 
@@ -77,6 +77,7 @@ Read current state_file, then update:
 | Spaced Exercise Queue | Update if exercises were completed |
 | Pending Questions | Add any unresolved questions raised |
 | Flags for Next Session | Add resume point if partial + any follow-up items |
+| Profile Refinement Log | Update with any persona/objective observations from this session |
 
 ## Step 6: Generate Partial Summary Card
 

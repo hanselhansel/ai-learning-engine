@@ -26,6 +26,26 @@ Connect new concepts to the learner's existing knowledge. The engine uses these 
 - **Basic accounting**: Understands debits/credits, accrual vs cash basis, and chart of accounts at a functional level
 - **Investing experience**: Familiar with stock markets, basic valuation concepts (P/E ratios, market cap) from personal investing
 
+## Learner Profile
+
+| Field | Value |
+|-------|-------|
+| **age_group** | Adult (18+) |
+| **experience_level** | Intermediate |
+| **domain_expertise** | Business operations, basic accounting, spreadsheet proficiency |
+| **persona** | Professional |
+
+## Learning Objective
+
+| Field | Value |
+|-------|-------|
+| **primary_goal** | Investment/Business |
+| **secondary_goals** | Career/Job Prep |
+| **goal_weights** | investment: 0.7, career: 0.3 |
+| **career_target** | Build investment analysis skills for portfolio management |
+| **perspective_lenses** | ["valuation frameworks", "risk assessment", "market dynamics", "portfolio construction"] |
+| **objective_statement** | I'm learning financial modeling so I can make better investment decisions and analyze companies more rigorously |
+
 ## Exercise Types (Portfolio Artifacts)
 
 Every drill produces a real artifact the learner can use. Rotate through these formats:

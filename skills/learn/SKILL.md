@@ -1,9 +1,9 @@
 ---
 name: learn
-description: Resume and run the current curriculum session. Adaptive learning engine with SM-2 spaced repetition, Socratic method, flex sessions (Micro/Quick/Standard/Deep/Synthesis), pre-testing, confidence calibration, teach-back, concept linking, and mastery-based progression. Triggers on "let's learn", "learn", "next lesson", "continue learning", "resume lesson", "start lesson", "today's lesson", or "/learn".
+description: Resume and run the current curriculum session. Adaptive learning engine with SM-2 spaced repetition, Socratic method, flex sessions (Micro/Quick/Standard/Deep/Synthesis), pre-testing, confidence calibration, teach-back, concept linking, mastery-based progression, persona-aware teaching, and goal-threaded learning. Triggers on "let's learn", "learn", "next lesson", "continue learning", "resume lesson", "start lesson", "today's lesson", or "/learn".
 ---
 
-# Adaptive Learning Engine v3
+# Adaptive Learning Engine v4
 
 Evidence-based session runner with flex sessions and hub-and-spoke architecture. Process only — all rules live in references/.
 
@@ -11,6 +11,16 @@ Evidence-based session runner with flex sessions and hub-and-spoke architecture.
 
 Read `CURRICULUM-CONFIG.md` from the curriculum directory specified in CLAUDE.md.
 Extract: file paths, learner bridges, exercise types, mastery thresholds, flex defaults, compression settings, tone.
+Extract learner_profile (persona, age_group, experience_level) and learning_objective (primary_goal, goal_weights, perspective_lenses, career_target) from config.
+
+**First-run detection**: If no state_file (SESSION-STATE.md) exists in the curriculum directory:
+- Display: "Looks like you're new here! Let me set up your curriculum first."
+- Run the generate-curriculum flow (read `skills/generate-curriculum/SKILL.md` and follow its protocol)
+- After curriculum generation completes, continue with Step 2 using the newly created state
+
+**Persona loading**: Read `references/learner-personas.md` to get teaching rules for the assigned persona. This determines question style, analogy sources, feedback tone, and hint escalation throughout the session.
+
+**Objective loading**: Read `references/objective-threading.md` to get the threading rules for the learner's primary_goal (and secondary_goals if configured with weights).
 
 ## Step 2: Load & Validate State
 
@@ -46,6 +56,11 @@ Session [X] | [Y]-day streak | [Z]/[N] concepts mastered ([W]%)
 
 **Surface flags** from previous session.
 
+**Objective change detection**: Compare current learning_objective in config to the objective logged in the last session entry. If different:
+- Acknowledge: "I see you've updated your learning goal to [NEW GOAL]. I'll adjust my questions and exercises accordingly."
+- Recalibrate perspective lenses for remaining session blocks
+- Log the change in Profile Refinement Log
+
 **ASK**: "How much time do you have?" Map answer to mode:
 - ~5 min: Micro
 - ~15-20 min: Quick
@@ -75,9 +90,30 @@ CHECKPOINT
 2. **SM-2 Quiz** (8-10 min): Read `references/sm2-algorithm.md`. Read `references/compression-logic.md` for content compression (skip Known terms, keep 1 random check).
 CHECKPOINT
 3. **Socratic Lesson** (20-25 min): Max 7 concepts (fewer if compression active). For EACH concept: bridge question, learner attempts, reveal + connect to pre-test answer. Mid-lesson retrieval checks every 2-3 concepts. **Escape hatch**: if learner says "I have no idea," give a hint first. If still stuck after hint, explain directly. Read `references/compression-logic.md` for difficulty scaling and velocity pacing.
+
+**Persona-aware teaching**: Before each Socratic question, consult learner-personas.md for the assigned persona's:
+- Question style (how to frame the question)
+- Explanation depth (how much to unpack in the reveal)
+- Analogy source (what domain to draw analogies from)
+- Hint escalation (how quickly to help if stuck)
+
+**Objective threading**: After each concept reveal, add a perspective angle from objective-threading.md:
+- Thread the learner's primary_goal perspective (e.g., "From an investor's perspective, this means...")
+- For multi-objective blending: alternate angles proportional to goal_weights
+- Bridge questions should use persona-appropriate analogies AND objective-relevant framing
+
 CHECKPOINT
 4. **Interleaved Practice** (8-10 min): 5 problems mixing concepts. Include 1 spaced exercise from queue. Reference CURRICULUM.md for concept CONTENT, not just term definitions.
 5. **Portfolio Exercise** (8-12 min): Use exercise_types from config. Every 3rd Standard session: swap for teach-back (read `references/teach-back-protocol.md`).
+
+**Objective-aware framing**: Frame the exercise through the learning_objective lens:
+- Career/Job Prep → "Draft an interview answer explaining [concept]"
+- Investment/Business → "Write a 1-paragraph bull case for a company using [concept]"
+- Academic → "Summarize the research landscape for [concept]"
+- Hobby → "Write a blog post about why [concept] is fascinating"
+- Teaching → "Write a 5-minute teaching script for [concept]"
+- Building → "Draft a technical spec for implementing [concept]"
+Use persona vocabulary level for the exercise output.
 6. **Reflect + Mastery Check** (5 min): Read `references/mastery-gates.md`. Ask founder summary. Run mastery gate. Every 10th session: growth reflection. Flag items for next session.
 CHECKPOINT
 
@@ -101,6 +137,23 @@ CHECKPOINT
 - Update SESSION-STATE.md with all session data (SM-2 updates, new terms, session log, flags)
 - Read `templates/session-state-schema.md` for archive rules: trim session log to last 10, pre-tests to last 5
 - Archive overflow to `sessions/archive/state-history.md`
+
+### Adaptive Refinement
+Read `references/adaptive-refinement.md`. Analyze session responses for:
+- Vocabulary signal: Was the learner's language above/below persona level?
+- Answer depth signal: Were answers more/less sophisticated than expected?
+- Pre-test performance: Consistently above 80% (too easy) or below 30% (too hard)?
+
+Log observations to SESSION-STATE.md under "Profile Refinement Log".
+If 3+ sessions show consistent level mismatch → flag for next session open:
+- Above level: "Your responses suggest you might be ready for [HIGHER PERSONA]. Want to adjust?"
+- Below level: "I notice you might benefit from more scaffolding. Want to adjust the teaching style?"
+
+### Weekly Digest Check
+Every 5 sessions OR every 7 calendar days (whichever comes first):
+- Generate a weekly learning digest (read `templates/weekly-digest.md`)
+- Include: concepts covered this week, SM-2 terms due, streak status, upcoming topics, 2-3 "spicy questions" to think about
+- Save to sessions/digests/week-XX.md
 
 ### Generate Outputs
 1. **Session Summary Card**: Read `templates/session-summary-card.md`. Generate and save to `sessions/summaries/session-XX.md`
@@ -134,3 +187,6 @@ git push
 - **SM-2 discipline**: Always update the tracker. Read references/sm2-algorithm.md for bounds.
 - **Checkpoints**: Write to progress.md after each major block. If /compact fires, re-read progress.md to resume.
 - **On-demand loading**: Only read reference files when the relevant block is active. Micro/Quick modes never load teach-back or concept-linking.
+- **All modes**: Load `references/learner-personas.md` (needed for teaching style) and `references/objective-threading.md` (needed for threading) at Step 1
+- **Standard+**: Also load `references/adaptive-refinement.md` at Step 6
+- **Micro/Quick**: Never load adaptive-refinement (too short to detect patterns)
