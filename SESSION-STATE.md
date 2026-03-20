@@ -58,6 +58,16 @@ Terms are reviewed using spaced repetition. `next_review` determines when a term
 |------|---------|---------|----------|-------------|------|------------|--------|-------|
 | | | | | | | | | |
 
+## Articulation Tracker
+
+| Session | Date | Exercise Type | Audience | Word Count | Conciseness | Persuasiveness | Specificity | Rewrite? | Rewrite Score | Consecutive Skips |
+|---------|------|--------------|----------|------------|-------------|----------------|-------------|----------|---------------|-------------------|
+
+> **Tracking rules:**
+> - `Consecutive Skips` tracks skip streak. Reset to 0 on any non-skip. Nudge at 3.
+> - Words/concept = total exercise word count / number of new concepts in that session. If 0 concepts, skip metric.
+> - Interview Readiness: Quiz ((avg/10)*100), Articulation (((avg-1)/4)*100). Composite: 60% content + 40% articulation.
+
 ## Confidence Calibration Summary
 
 | Session | Calibrated | Overconfident | Underconfident | Total |

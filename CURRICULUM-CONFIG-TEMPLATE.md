@@ -134,3 +134,13 @@ For Deep Dive mode, occasionally swap portfolio exercise for:
 - **Reverse quiz**: [learner writes quiz questions, Claude answers (tests depth of understanding)]
 
 Rotation: every 4th Deep session, use a variety format instead of standard portfolio exercise.
+
+## Articulation Scoring
+
+| Setting | Value |
+|---------|-------|
+| **enabled** | true |
+| **progressive_difficulty** | true |
+| **rewrite_threshold** | 3 |
+| **word_count_tracking** | true |
+| **audience_tags** | VC, hiring_manager, engineer, general |

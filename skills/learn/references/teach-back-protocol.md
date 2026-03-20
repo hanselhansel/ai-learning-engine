@@ -24,6 +24,8 @@ Claude plays a skeptical but fair colleague. Ask 2-3 follow-up questions:
 3. **Edge case**: "What happens when [unusual scenario]?"
 4. **Analogy challenge**: "You compared it to [X], but isn't [Y] a better analogy because...?"
 5. **Depth probe**: "You said [surface claim]. But HOW does that actually work under the hood?"
+6. **Brevity challenge**: "You used [X] words. A hiring manager gives you 30 seconds. Try again."
+7. **Persuasion probe**: "You explained WHAT but not WHY I should care. What's the stakes?"
 
 **Skepticism calibration:**
 - Early sessions (1-10): friendly skeptic (60% supportive, 40% challenging)
@@ -37,8 +39,10 @@ Claude plays a skeptical but fair colleague. Ask 2-3 follow-up questions:
 | **Clarity** | Confusing | Understandable | Crystal clear |
 | **Depth** | Surface only | Some mechanism | Root understanding |
 | **Business connect** | None | Mentioned | Compelling case |
+| **Conciseness** | 3x more words than needed | Some filler, could trim 30% | Every word earns its place |
+| **Persuasiveness** | States facts only | Has structure but weak evidence | Clear thesis + evidence + so-what |
 
-Overall score = average of 4 dimensions.
+Overall score = average of 6 dimensions.
 - Score >= 4.0: "You could teach this at a meetup"
 - Score 3.0-3.9: "Solid. One area to sharpen: [specific]"
 - Score < 3.0: "Let's revisit. Here's what to focus on: [specific]"

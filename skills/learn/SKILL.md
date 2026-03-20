@@ -29,6 +29,7 @@ Read the `state_file` (SESSION-STATE.md). This is the **single source of truth**
 **Validate:**
 - Required sections exist (position, terminology tracker, session log, flags)
 - SM-2 values in range: ease 1.3-3.0, interval >= 0. Read `references/sm2-algorithm.md` for sanity check rules.
+- If `articulation_scoring` enabled in config AND no "Articulation Tracker" section in SESSION-STATE.md → auto-create empty tracker section (table header + tracking rules block) after Terminology Mastery Tracker
 - If corrupted: warn learner, offer reconstruction from progress.md + git history
 - If position mismatch with CURRICULUM.md: warn learner, offer to recalibrate
 
@@ -106,6 +107,14 @@ CHECKPOINT
 4. **Interleaved Practice** (8-10 min): 5 problems mixing concepts. Include 1 spaced exercise from queue. Reference CURRICULUM.md for concept CONTENT, not just term definitions.
 5. **Portfolio Exercise** (8-12 min): Use exercise_types from config. Every 3rd Standard session: swap for teach-back (read `references/teach-back-protocol.md`).
 
+**Articulation scoring** (if `articulation_scoring` enabled in config): Read `references/articulation-scoring.md`.
+Tag exercise with audience (from config `audience_tags` rotation or exercise context).
+Score on Conciseness, Persuasiveness, Specificity (1-5 each).
+If conciseness < `rewrite_threshold`: trigger Rewrite Challenge (skip allowed — log as SKIPPED).
+Generate before/after HTML card if rewrite triggered. Save card to session summary.
+If model rewrite given: append to `portfolio/best-practices.md`.
+Log scores + word count + audience tag to Articulation Tracker in SESSION-STATE.md.
+
 **Objective-aware framing**: Frame the exercise through the learning_objective lens:
 - Career/Job Prep → "Draft an interview answer explaining [concept]"
 - Investment/Business → "Write a 1-paragraph bull case for a company using [concept]"
@@ -119,7 +128,7 @@ CHECKPOINT
 
 ### DEEP DIVE MODE (90-120+ min)
 All Standard steps PLUS:
-7. **Teach-Back with Peer Simulation** (15-20 min): Read `references/teach-back-protocol.md`. Claude plays skeptical colleague.
+7. **Teach-Back with Peer Simulation** (15-20 min): Read `references/teach-back-protocol.md`. If `articulation_scoring` enabled, also read `references/articulation-scoring.md`. Claude plays skeptical colleague. Score on 6 dimensions (Accuracy, Clarity, Depth, Business Connect, Conciseness, Persuasiveness). Log articulation scores to tracker.
 CHECKPOINT
 8. **Concept Linking** (10-15 min): Read `references/concept-linking.md`. Surface 3-5 connections, update concept links table, generate/update Mermaid map.
 9. **Community Check-in** (5-10 min): Phase-appropriate engagement.
@@ -133,8 +142,10 @@ CHECKPOINT
 
 ## Step 6: Close Session (ALL MODES)
 
-### Update State
+### Update State (CRITICAL — do this FIRST, before visual outputs)
 - Update SESSION-STATE.md with all session data (SM-2 updates, new terms, session log, flags)
+- Update Articulation Tracker with session's scores (if articulation scoring was active)
+- Compute Interview Readiness Score: 60% content ((avg quiz/10)*100) + 40% articulation (((avg of 3 dimensions - 1)/4)*100)
 - Read `templates/session-state-schema.md` for archive rules: trim session log to last 10, pre-tests to last 5
 - Archive overflow to `sessions/archive/state-history.md`
 
@@ -155,10 +166,15 @@ Every 5 sessions OR every 7 calendar days (whichever comes first):
 - Include: concepts covered this week, SM-2 terms due, streak status, upcoming topics, 2-3 "spicy questions" to think about
 - Save to sessions/digests/week-XX.md
 
-### Generate Outputs
-1. **Session Summary Card**: Read `templates/session-summary-card.md`. Generate and save to `sessions/summaries/session-XX.md`
-2. **Analytics Dashboard**: Read `templates/analytics-dashboard.html`. Update with current data. Save to `portfolio/analytics-dashboard.html`
-3. **Concept Map** (if Deep/Synthesis): Read `references/concept-linking.md`. Generate Mermaid map. Save to `portfolio/concept-map.md`
+### Generate Outputs (best-effort — one failure doesn't block others)
+1. **Session Summary Card**: Read `templates/session-summary-card.md`. Generate and save to `sessions/summaries/session-XX.md`. Include before/after rewrite cards if any were generated.
+2. **Analytics Dashboard**: Read `templates/analytics-dashboard.html`. Build `SESSION_DATA` JS object from SESSION-STATE.md metrics (sessions, mastery counts, velocity, calibration, articulation scores, compression ratios, interview readiness). All user text MUST be escaped with JSON.stringify(). Write complete HTML with data inline. Save to `portfolio/analytics-dashboard.html`. Auto-open with `open` (macOS).
+3. **Concept Map** (if Deep/Synthesis):
+   - Read `references/concept-linking.md`
+   - Read concept links from SESSION-STATE.md
+   - Read `templates/concept-map-interactive.html`. Build `CONCEPT_DATA` JS object with nodes (concepts + mastery + definitions) and edges (relationships). Write complete HTML. Save to `portfolio/concept-map.html`. Auto-open in browser after dashboard.
+   - ALSO generate Mermaid version → save to `portfolio/concept-map.md` (for git diff readability)
+4. **Best Practices** (if model rewrite given): Append entry to `portfolio/best-practices.md` with original, compressed, and technique.
 
 ### Update Progress
 - Update progress.md with session entry
@@ -186,7 +202,8 @@ git push
 - **Portfolio output**: Every exercise produces a real, usable artifact.
 - **SM-2 discipline**: Always update the tracker. Read references/sm2-algorithm.md for bounds.
 - **Checkpoints**: Write to progress.md after each major block. If /compact fires, re-read progress.md to resume.
-- **On-demand loading**: Only read reference files when the relevant block is active. Micro/Quick modes never load teach-back or concept-linking.
+- **On-demand loading**: Only read reference files when the relevant block is active. Micro/Quick modes never load teach-back, concept-linking, or articulation-scoring.
 - **All modes**: Load `references/learner-personas.md` (needed for teaching style) and `references/objective-threading.md` (needed for threading) at Step 1
-- **Standard+**: Also load `references/adaptive-refinement.md` at Step 6
-- **Micro/Quick**: Never load adaptive-refinement (too short to detect patterns)
+- **Standard+**: Load `references/articulation-scoring.md` at Portfolio/Teach-Back blocks (if enabled in config). Also load `references/adaptive-refinement.md` at Step 6
+- **Micro/Quick**: Never load adaptive-refinement or articulation-scoring (too short for extended exercises)
+- **Output sequencing**: State update FIRST (critical), then visual outputs independently (best-effort). One output failure doesn't block others.

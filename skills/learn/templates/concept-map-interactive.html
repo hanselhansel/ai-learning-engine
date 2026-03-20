@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Concept Map</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a; color: #e2e8f0; display: flex; flex-direction: column; height: 100vh;
+        }
+        .header { text-align: center; padding: 20px 24px 0; }
+        .header h1 { font-size: 24px; font-weight: 700; color: #f8fafc; }
+        .header .subtitle { color: #94a3b8; margin-top: 4px; font-size: 13px; }
+        .stats-bar {
+            display: flex; gap: 24px; justify-content: center; padding: 12px 24px;
+            font-size: 13px; color: #94a3b8; flex-wrap: wrap;
+        }
+        .stats-bar span { color: #f8fafc; font-weight: 600; }
+        .filter-bar {
+            display: flex; gap: 12px; align-items: center; justify-content: center;
+            padding: 8px 24px 12px; flex-wrap: wrap;
+        }
+        .filter-bar label {
+            display: flex; align-items: center; gap: 4px; font-size: 13px;
+            color: #cbd5e1; cursor: pointer; user-select: none;
+        }
+        .filter-bar input[type="checkbox"] { accent-color: #60a5fa; cursor: pointer; }
+        .btn {
+            background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px;
+            padding: 4px 12px; font-size: 12px; cursor: pointer; transition: background .15s;
+        }
+        .btn:hover { background: #475569; }
+        .main-area { display: flex; flex: 1; min-height: 0; padding: 0 16px 8px; gap: 12px; }
+        #network-container {
+            flex: 1; background: #1e293b; border-radius: 12px; border: 1px solid #334155;
+        }
+        #info-panel {
+            width: 260px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;
+            padding: 20px; display: none; flex-direction: column; gap: 12px; overflow-y: auto;
+        }
+        #info-panel.active { display: flex; }
+        #info-panel h2 { font-size: 18px; color: #f8fafc; font-weight: 700; word-break: break-word; }
+        #info-panel .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: #64748b; }
+        #info-panel .field-value { font-size: 14px; color: #e2e8f0; margin-top: 2px; }
+        .mastery-badge {
+            display: inline-block; padding: 2px 10px; border-radius: 9999px;
+            font-size: 12px; font-weight: 600;
+        }
+        .mastery-badge.known { background: rgba(74,222,128,.15); color: #4ade80; }
+        .mastery-badge.learning { background: rgba(250,204,21,.15); color: #facc15; }
+        .mastery-badge.new { background: rgba(248,113,113,.15); color: #f87171; }
+        .footer {
+            text-align: center; padding: 8px; font-size: 11px; color: #475569;
+            display: flex; justify-content: space-between; align-items: center; padding: 6px 24px;
+        }
+        .legend { display: flex; gap: 16px; font-size: 11px; color: #94a3b8; align-items: center; }
+        .legend-dot {
+            width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px;
+        }
+        .legend-line { display: inline-block; width: 20px; height: 0; margin-right: 4px; vertical-align: middle; }
+        .legend-line.solid { border-top: 2px solid #64748b; }
+        .legend-line.dashed { border-top: 2px dashed #64748b; }
+        select.filter-select {
+            background: #334155; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px;
+            padding: 4px 8px; font-size: 12px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<script>
+// ===== DATA INJECTION POINT =====
+// The learning engine replaces this entire object with real concept data.
+// All string values MUST be escaped with JSON.stringify() during injection.
+const CONCEPT_DATA = {
+    curriculum_name: "Spatial AI, World Models & Embodied Intelligence",
+    date: "2026-03-20",
+    total_concepts: 33,
+    nodes: [
+        { id: "world-model", label: "World Model", group: "Phase 1: Foundations", mastery: "Known", definition: "Predicts what happens next physically", quiz_score: 9, last_reviewed: "2026-03-18", ease: 2.5 },
+        { id: "spatial-intelligence", label: "Spatial Intelligence", group: "Phase 1: Foundations", mastery: "Known", definition: "Ability to reason about 3D space and objects", quiz_score: 8, last_reviewed: "2026-03-17", ease: 2.6 },
+        { id: "jepa", label: "JEPA", group: "Phase 1: Foundations", mastery: "Learning", definition: "Joint Embedding Predictive Architecture", quiz_score: 6, last_reviewed: "2026-03-19", ease: 2.1 },
+        { id: "nerf", label: "NeRF", group: "Phase 2: Representations", mastery: "Learning", definition: "Neural Radiance Fields for 3D reconstruction", quiz_score: 7, last_reviewed: "2026-03-16", ease: 2.3 },
+        { id: "gaussian-splatting", label: "Gaussian Splatting", group: "Phase 2: Representations", mastery: "New", definition: "Real-time 3D rendering with Gaussians", quiz_score: null, last_reviewed: null, ease: 2.5 },
+        { id: "embodied-ai", label: "Embodied AI", group: "Phase 3: Embodiment", mastery: "New", definition: "AI that interacts with the physical world", quiz_score: null, last_reviewed: null, ease: 2.5 },
+        { id: "sim-to-real", label: "Sim-to-Real Transfer", group: "Phase 3: Embodiment", mastery: "New", definition: "Transferring skills from simulation to reality", quiz_score: null, last_reviewed: null, ease: 2.5 }
+    ],
+    edges: [
+        { from: "world-model", to: "spatial-intelligence", relationship: "enables", session_added: 1 },
+        { from: "jepa", to: "world-model", relationship: "builds on", session_added: 2 },
+        { from: "jepa", to: "spatial-intelligence", relationship: "competes with", session_added: 5 },
+        { from: "nerf", to: "gaussian-splatting", relationship: "analogous to", session_added: 4 },
+        { from: "spatial-intelligence", to: "embodied-ai", relationship: "requires", session_added: 3 },
+        { from: "embodied-ai", to: "sim-to-real", relationship: "part of", session_added: 6 },
+        { from: "nerf", to: "world-model", relationship: "enables", session_added: 3 }
+    ]
+};
+// ===== END DATA INJECTION =====
+
+const MASTERY_COLORS = { Known: '#4ade80', Learning: '#facc15', New: '#f87171' };
+const MASTERY_BORDERS = { Known: '#22c55e', Learning: '#eab308', New: '#ef4444' };
+const MASTERY_SIZES = { Known: 30, Learning: 20, New: 15 };
+const STRONG_RELS = new Set(['enables', 'requires', 'part of', 'builds on']);
+
+// Group shading — subtle hue offsets per unique group
+const uniqueGroups = [...new Set(CONCEPT_DATA.nodes.map(n => n.group))];
+const GROUP_BG = {};
+const groupHues = [210, 250, 170, 30, 310, 50, 130, 350];
+uniqueGroups.forEach((g, i) => {
+    const h = groupHues[i % groupHues.length];
+    GROUP_BG[g] = { color: { background: `hsl(${h},30%,18%)`, border: `hsl(${h},30%,28%)` } };
+});
+
+function buildGraph(masteryFilter, relFilter) {
+    const visibleMastery = new Set(masteryFilter);
+    let filteredNodes = CONCEPT_DATA.nodes.filter(n => visibleMastery.has(n.mastery));
+
+    // Size management: auto-hide New if >30 nodes and New is checked
+    if (filteredNodes.length > 30 && visibleMastery.has('New')) {
+        const withoutNew = filteredNodes.filter(n => n.mastery !== 'New');
+        if (withoutNew.length <= 30) filteredNodes = withoutNew;
+    }
+
+    // Size management: >50 nodes — show only first group + direct connections
+    if (filteredNodes.length > 50 && uniqueGroups.length > 0) {
+        const currentPhase = uniqueGroups[0];
+        const phaseIds = new Set(filteredNodes.filter(n => n.group === currentPhase).map(n => n.id));
+        const connectedIds = new Set();
+        CONCEPT_DATA.edges.forEach(e => {
+            if (phaseIds.has(e.from)) connectedIds.add(e.to);
+            if (phaseIds.has(e.to)) connectedIds.add(e.from);
+        });
+        const allowedIds = new Set([...phaseIds, ...connectedIds]);
+        filteredNodes = filteredNodes.filter(n => allowedIds.has(n.id));
+    }
+
+    const nodeIds = new Set(filteredNodes.map(n => n.id));
+
+    const nodes = filteredNodes.map(n => ({
+        id: n.id,
+        label: n.label,
+        group: n.group,
+        size: MASTERY_SIZES[n.mastery] || 15,
+        color: {
+            background: MASTERY_COLORS[n.mastery] || '#f87171',
+            border: MASTERY_BORDERS[n.mastery] || '#ef4444',
+            highlight: { background: MASTERY_COLORS[n.mastery], border: '#f8fafc' },
+            hover: { background: MASTERY_COLORS[n.mastery], border: '#f8fafc' }
+        },
+        font: { color: '#f8fafc', size: 12 },
+        borderWidth: 2,
+        shape: 'dot',
+        _data: n
+    }));
+
+    let filteredEdges = CONCEPT_DATA.edges.filter(e => nodeIds.has(e.from) && nodeIds.has(e.to));
+    if (relFilter !== 'all') {
+        filteredEdges = filteredEdges.filter(e => e.relationship === relFilter);
+    }
+
+    const edges = filteredEdges.map(e => ({
+        from: e.from,
+        to: e.to,
+        label: e.relationship,
+        dashes: !STRONG_RELS.has(e.relationship),
+        font: { color: '#94a3b8', size: 10, strokeWidth: 0, align: 'middle' },
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+        color: { color: '#64748b', highlight: '#94a3b8', hover: '#94a3b8' },
+        smooth: { type: 'continuous' }
+    }));
+
+    return { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Render header
+    document.getElementById('title').textContent = CONCEPT_DATA.curriculum_name + ' — Interactive Concept Map';
+    document.getElementById('date').textContent = 'Generated: ' + CONCEPT_DATA.date;
+
+    // Stats
+    const counts = { Known: 0, Learning: 0, New: 0 };
+    CONCEPT_DATA.nodes.forEach(n => { counts[n.mastery] = (counts[n.mastery] || 0) + 1; });
+    document.getElementById('stat-total').textContent = CONCEPT_DATA.total_concepts;
+    document.getElementById('stat-known').textContent = counts.Known;
+    document.getElementById('stat-learning').textContent = counts.Learning;
+    document.getElementById('stat-new').textContent = counts.New;
+    document.getElementById('stat-edges').textContent = CONCEPT_DATA.edges.length;
+
+    // Populate relationship filter
+    const relTypes = [...new Set(CONCEPT_DATA.edges.map(e => e.relationship))].sort();
+    const relSelect = document.getElementById('rel-filter');
+    relTypes.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r; opt.textContent = r;
+        relSelect.appendChild(opt);
+    });
+
+    // Build initial graph
+    const container = document.getElementById('network-container');
+    let masteryFilter = ['Known', 'Learning', 'New'];
+    let relFilter = 'all';
+    let data = buildGraph(masteryFilter, relFilter);
+
+    const options = {
+        nodes: { font: { color: '#f8fafc', size: 12 }, borderWidth: 2 },
+        edges: {
+            font: { color: '#94a3b8', size: 10, strokeWidth: 0 },
+            arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+            color: { color: '#64748b', highlight: '#94a3b8' },
+            smooth: { type: 'continuous' }
+        },
+        physics: {
+            barnesHut: { gravitationalConstant: -3000, centralGravity: 0.3, springLength: 150 },
+            stabilization: { iterations: 150 }
+        },
+        interaction: {
+            hover: true, tooltipDelay: 200,
+            highlightNearest: { enabled: true, degree: 1, hover: true }
+        },
+        groups: GROUP_BG
+    };
+
+    const network = new vis.Network(container, data, options);
+
+    // Click → info panel
+    const panel = document.getElementById('info-panel');
+    network.on('click', params => {
+        if (params.nodes.length === 0) { panel.classList.remove('active'); return; }
+        const nodeId = params.nodes[0];
+        const node = data.nodes.get(nodeId);
+        if (!node || !node._data) return;
+        const d = node._data;
+        document.getElementById('info-name').textContent = d.label;
+        document.getElementById('info-def').textContent = d.definition || 'No data yet';
+        document.getElementById('info-group').textContent = d.group || '—';
+        document.getElementById('info-quiz').textContent = d.quiz_score != null ? d.quiz_score + '/10' : 'Not quizzed';
+        document.getElementById('info-reviewed').textContent = d.last_reviewed || 'Never';
+        document.getElementById('info-ease').textContent = d.ease != null ? d.ease.toFixed(1) : '—';
+        const badge = document.getElementById('info-mastery');
+        badge.textContent = d.mastery;
+        badge.className = 'mastery-badge ' + d.mastery.toLowerCase();
+        panel.classList.add('active');
+    });
+
+    // Filter handlers
+    function refresh() {
+        masteryFilter = [];
+        if (document.getElementById('f-known').checked) masteryFilter.push('Known');
+        if (document.getElementById('f-learning').checked) masteryFilter.push('Learning');
+        if (document.getElementById('f-new').checked) masteryFilter.push('New');
+        relFilter = relSelect.value;
+        data = buildGraph(masteryFilter, relFilter);
+        network.setData(data);
+    }
+
+    document.getElementById('f-known').addEventListener('change', refresh);
+    document.getElementById('f-learning').addEventListener('change', refresh);
+    document.getElementById('f-new').addEventListener('change', refresh);
+    relSelect.addEventListener('change', refresh);
+    document.getElementById('btn-reset').addEventListener('click', () => {
+        document.getElementById('f-known').checked = true;
+        document.getElementById('f-learning').checked = true;
+        document.getElementById('f-new').checked = true;
+        relSelect.value = 'all';
+        refresh();
+        network.fit({ animation: true });
+    });
+});
+</script>
+
+<div class="header">
+    <h1 id="title"></h1>
+    <div class="subtitle" id="date"></div>
+</div>
+
+<div class="stats-bar">
+    Total: <span id="stat-total"></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    Known: <span id="stat-known" style="color:#4ade80"></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    Learning: <span id="stat-learning" style="color:#facc15"></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    New: <span id="stat-new" style="color:#f87171"></span>&nbsp;&nbsp;|&nbsp;&nbsp;
+    Connections: <span id="stat-edges"></span>
+</div>
+
+<div class="filter-bar">
+    <label><input type="checkbox" id="f-known" checked> Known</label>
+    <label><input type="checkbox" id="f-learning" checked> Learning</label>
+    <label><input type="checkbox" id="f-new" checked> New</label>
+    <select id="rel-filter" class="filter-select">
+        <option value="all">All relationships</option>
+    </select>
+    <button class="btn" id="btn-reset">Reset View</button>
+</div>
+
+<div class="main-area">
+    <div id="network-container"></div>
+    <div id="info-panel">
+        <h2 id="info-name"></h2>
+        <div><span class="mastery-badge" id="info-mastery"></span></div>
+        <div><div class="field-label">Definition</div><div class="field-value" id="info-def"></div></div>
+        <div><div class="field-label">Phase / Group</div><div class="field-value" id="info-group"></div></div>
+        <div><div class="field-label">Quiz Score</div><div class="field-value" id="info-quiz"></div></div>
+        <div><div class="field-label">Last Reviewed</div><div class="field-value" id="info-reviewed"></div></div>
+        <div><div class="field-label">Ease Factor (SM-2)</div><div class="field-value" id="info-ease"></div></div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="legend">
+        <span><span class="legend-dot" style="background:#4ade80"></span>Known</span>
+        <span><span class="legend-dot" style="background:#facc15"></span>Learning</span>
+        <span><span class="legend-dot" style="background:#f87171"></span>New</span>
+        <span><span class="legend-line solid"></span>Strong</span>
+        <span><span class="legend-line dashed"></span>Weak</span>
+    </div>
+    <div>Generated by Learning Engine v4</div>
+</div>
+</body>
+</html>
