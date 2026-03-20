@@ -71,7 +71,7 @@ Map answer to:
 - Suggest 5-8 relevant communities (Reddit, Discord, Slack, Twitter/X accounts)
 
 ### Placement Test (3 Questions)
-Read `references/placement-test.md` (from the learn skill directory at `skills/learn/references/placement-test.md`).
+Read `references/placement-test.md` (from the learn skill directory, e.g., `skills/learn/references/placement-test.md` or `.claude/skills/learn/references/placement-test.md`).
 
 Generate 3 topic-specific diagnostic questions at Easy/Medium/Hard levels.
 Ask them one at a time. Score responses per the rubric in placement-test.md.
