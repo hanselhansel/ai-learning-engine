@@ -26,6 +26,26 @@ Connect new concepts to the learner's existing knowledge. The engine uses these 
 - **System design**: Designed distributed systems, databases, APIs -- can map ML system components to known architectural patterns
 - **Math (calculus)**: Comfortable with derivatives and chain rule -- can engage with backpropagation and gradient descent mathematically, not just conceptually
 
+## Learner Profile
+
+| Field | Value |
+|-------|-------|
+| **age_group** | Adult (18+) |
+| **experience_level** | Intermediate |
+| **domain_expertise** | Software engineering, Python, basic statistics, deployed web applications |
+| **persona** | Professional |
+
+## Learning Objective
+
+| Field | Value |
+|-------|-------|
+| **primary_goal** | Building/Engineering |
+| **secondary_goals** | Career/Job Prep |
+| **goal_weights** | building: 0.7, career: 0.3 |
+| **career_target** | Build ML-powered features into existing products |
+| **perspective_lenses** | ["implementation details", "system design", "failure modes", "production readiness", "toolchain"] |
+| **objective_statement** | I'm learning ML so I can build ML-powered features into the products I work on, eventually transitioning to an ML engineering role |
+
 ## Exercise Types (Portfolio Artifacts)
 
 Every drill produces a real artifact the learner can use. Rotate through these formats:

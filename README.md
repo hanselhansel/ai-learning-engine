@@ -1,9 +1,9 @@
-# AI Learning Engine v3
+# AI Learning Engine v4
 
 **Turn any AI assistant into a structured tutor with spaced repetition, mastery gates, and proof-of-learning.**
 
-![Version](https://img.shields.io/badge/version-3.0-blue)
-![Features](https://img.shields.io/badge/features-32-brightgreen)
+![Version](https://img.shields.io/badge/version-4.0-blue)
+![Features](https://img.shields.io/badge/features-42-brightgreen)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Stars](https://img.shields.io/github/stars/hanselhansel/ai-learning-engine?style=social)
 
@@ -21,10 +21,12 @@ YouTube and articles didn't work. Passive consumption, no feedback loop, no way 
 
 3 sessions in: quiz scores climbing, categorization accuracy 51.5% → 86%, founder-level explanations scoring 9/10. The system works. Fork it and learn anything.
 
+v4 adds persona-aware teaching — the engine adapts its vocabulary, analogies, and difficulty to who you are, and threads your learning goal through every question.
+
 ---
 
 > **Building & Learning in Public**
-> Currently learning: Spatial AI | Day 4/50 | 38 terms tracked | 3 sessions complete
+> Currently learning: Spatial AI | Day 5/50 | 38 terms tracked | 5 sessions complete
 >
 > [Live Analytics Dashboard](https://hanselhansel.github.io/ai-learning-engine/portfolio/analytics-dashboard.html)
 
@@ -36,25 +38,25 @@ YouTube and articles didn't work. Passive consumption, no feedback loop, no way 
 ╔══════════════════════════════════════════════╗
 ║          LEARNING SESSION RECEIPT            ║
 ╠══════════════════════════════════════════════╣
-║  Session:    #4 (Day 3)                      ║
+║  Session:    #5 (Day 4)                      ║
 ║  Mode:       Standard                        ║
 ║  Duration:   ~90 min                         ║
-║  Date:       2026-03-19                      ║
-║  Streak:     2 days                          ║
+║  Date:       2026-03-20                      ║
+║  Streak:     1 day                           ║
 ╠══════════════════════════════════════════════╣
-║  SM-2 Quiz:  6.9/10 (just below target)      ║
-║  Strongest:  Transformer (9/10)              ║
-║  Strongest:  Gaussian Splatting (9/10)       ║
-║  Drill:      51.5% → 86% (redo)             ║
-║  Summary:    4/10 → 9/10 (coached)           ║
+║  SM-2 Quiz:  7.2/10 (FIRST PASS ✓)          ║
+║  Strongest:  World Model (9/10)             ║
+║  Strongest:  Cross-Embodiment (9/10)        ║
+║  Investor Thesis: 3 companies analyzed      ║
+║  Community:  World Labs hackathon observed  ║
 ╠══════════════════════════════════════════════╣
 ║  Terms Known:    0 / 38                      ║
 ║  Terms Learning: 38                          ║
-║  Overall:        6% complete (3/50 days)     ║
+║  Overall:        8% complete (4/50 days)     ║
 ╠══════════════════════════════════════════════╣
-║  ★ LeCun JEPA explanation: 8/10              ║
-║  🔧 Focus: World Model, Manipulation        ║
-║  Next: Day 4 — The Current Landscape         ║
+║  ★ AMI Labs / JEPA explanation: 8/10         ║
+║  🔧 Focus: Diffusion Policy (3/10)          ║
+║  Next: Day 5 — Deeper into the Stack        ║
 ╚══════════════════════════════════════════════╝
 ```
 
@@ -116,7 +118,7 @@ cd my-learning-project
 ```
 
 1. **Clone the repo** (above)
-2. **Generate a curriculum**: Run `/generate-curriculum` and answer 5 questions — or copy an example from `examples/` and customize
+2. **Generate a curriculum**: Run `/generate-curriculum` and answer 8 questions — or copy an example from `examples/` and customize
 3. **Configure**: Copy `CURRICULUM-CONFIG-TEMPLATE.md` to `CURRICULUM-CONFIG.md` and fill in your learner bridges and preferences
 4. **Install skills**: Follow your platform's setup guide (see [Platform Setup](#platform-setup))
 5. **Start learning**: Type `/learn` — type `/learn-end` to save and exit early
@@ -125,7 +127,7 @@ See `SETUP-GUIDE.md` for the full walkthrough.
 
 ---
 
-## Features (32)
+## Features (42)
 
 ### Core Engine (11 — from v2)
 
@@ -167,6 +169,19 @@ See `SETUP-GUIDE.md` for the full walkthrough.
 30. **Micro-Review Mode** — 5-min coffee-break review
 31. **Mermaid Concept Map** — auto-generated visual knowledge web
 32. **Learning Streak & Milestones** — don't-break-the-chain motivation
+
+### Persona & Adaptation Features (10 — new in v4)
+
+33. **Learner Personas** — 5 teaching styles: Elementary, Teen, Adult Beginner, Professional, Expert
+34. **Objective Threading** — 6 goal templates thread your WHY through every question
+35. **Adaptive Refinement** — auto-detects if teaching level needs adjustment
+36. **First-Run Detection** — auto-redirects new users to curriculum setup
+37. **Interactive Placement Test** — 3-question diagnostic auto-assigns your persona
+38. **Session Tone Preview** — see how the engine will teach you before starting
+39. **Multi-Objective Blending** — weighted goal mixing (60% career + 40% investing)
+40. **Portfolio Auto-Generator** — objective-aware portfolio showcase page
+41. **Cross-Curriculum Transfer Credits** — SM-2 mastery carries across curricula via canonical IDs
+42. **Weekly Learning Digest** — weekly summary with upcoming topics and spicy questions
 
 ---
 
@@ -213,18 +228,24 @@ Pre-built curricula ready to fork:
 
 ```
 skills/learn/
-├── SKILL.md                    # ~150 lines: session flow PROCESS only
+├── SKILL.md                    # ~170 lines: session flow PROCESS only
 ├── references/
-│   ├── sm2-algorithm.md        # SM-2 rules, ease factor calc, sanity checks
+│   ├── sm2-algorithm.md        # SM-2 rules + canonical IDs + transfer credits
 │   ├── flex-session-blocks.md  # 5 mode definitions, block composition table
 │   ├── compression-logic.md    # Velocity thresholds, compression rules
 │   ├── teach-back-protocol.md  # Peer simulation, scoring rubric
 │   ├── mastery-gates.md        # Gate logic, streaks, milestones
-│   └── concept-linking.md      # Relationship tracking, Mermaid generation
+│   ├── concept-linking.md      # Relationship tracking, Mermaid generation
+│   ├── learner-personas.md     # 5 persona definitions with teaching rules (NEW)
+│   ├── objective-threading.md  # 6 goal templates + multi-objective blending (NEW)
+│   ├── adaptive-refinement.md  # Auto-detection + adjustment rules (NEW)
+│   └── placement-test.md       # 3-question diagnostic placement (NEW)
 └── templates/
     ├── session-summary-card.md # Receipt-style session summary
     ├── analytics-dashboard.html# Chart.js dashboard
-    └── session-state-schema.md # v3 state field definitions
+    ├── session-state-schema.md # v4 state field definitions
+    ├── portfolio-showcase.html # Objective-aware portfolio page (NEW)
+    └── weekly-digest.md        # Weekly learning digest template (NEW)
 ```
 
 SKILL.md says "Read `references/sm2-algorithm.md` for update rules" — Claude loads on demand. Quick/Micro modes never load teach-back or concept-linking files. This saves ~40% tokens vs monolithic skills.
@@ -239,6 +260,7 @@ You: /learn
 AI: [reads CURRICULUM-CONFIG.md → SESSION-STATE.md → CURRICULUM.md]
 AI: "What mode? Micro (5m) | Quick (15m) | Standard (60m) | Deep (120m)"
 You: Standard
+AI: [reads learner persona: Professional, goal: Career/Job Prep]
 
 === Session 12 of ~50: How Robots See (Perception) ===
 
@@ -257,9 +279,10 @@ Confidence (1-5): 4
 Result: Correct. Ease: 2.7 → 2.8. Next review: 8 days.
 
 --- SOCRATIC LESSON (25-30 min, max 7 concepts) ---
-"How would a robot 'see' a cluttered kitchen counter?"
-You: [reason about it]
-"Good — you got the sensor fusion part right. What you missed is..."
+"Given your investing background — how would a robot 'see' a cluttered kitchen counter?
+What sensors would it need, and what's the unit economics of those sensors?"
+You: [reason about it, drawing on investment frameworks]
+"Good analysis. From a job interview angle — here's how you'd explain sensor fusion..."
 [Connects to your pre-test answer]
 
 --- INTERLEAVED PRACTICE (10 min) ---
@@ -298,6 +321,9 @@ This engine implements techniques from learning science research:
 - **Teach-back** — explaining to others achieves 90% retention (vs 10% lecture)
 - **Confidence calibration** — metacognitive awareness improves learning efficiency
 - **Testing effect** — retrieval practice is more effective than re-reading
+- **Zone of Proximal Development** — teaching at the right difficulty level (not too easy, not too hard)
+- **Expertise reversal effect** — scaffolding that helps beginners can HARM experts
+- **Goal-oriented learning** — threading objectives through content increases engagement and retention
 
 ---
 
@@ -343,6 +369,15 @@ Yes. Finance, law, history, language, music theory — any structured learning w
 **Q: What if I miss a day?**
 The engine uses session numbers, not calendar days. Pick up where you left off. SM-2 recalculates review priorities automatically.
 
+**Q: Can a kid use this?**
+Yes. The engine has 5 persona levels from Elementary (ages 8-12) to Expert. An Elementary learner gets game analogies, gentle hints, and simple exercises. A Professional gets full jargon, business cases, and hard Socratic questions. Set your persona in CURRICULUM-CONFIG.md or let the placement test auto-assign it.
+
+**Q: How does it know my level?**
+Three ways: (1) Self-assessment during onboarding, (2) A 3-question placement test that evaluates your actual responses, and (3) Adaptive refinement that monitors your session performance and suggests adjustments if your level changes.
+
+**Q: What's new in v4?**
+Persona-aware teaching (5 levels), goal-threaded learning (6 objectives), adaptive refinement, interactive placement test, multi-objective blending, portfolio auto-generator, cross-curriculum transfer credits, and weekly learning digests. The engine now adapts to WHO you are, not just WHAT you're learning. See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md).
+
 **Q: How do I upgrade from v1 or v2?**
 See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md). Your progress is preserved — terminology, position, and session history all carry forward.
 
@@ -353,13 +388,14 @@ See [MIGRATION-GUIDE.md](MIGRATION-GUIDE.md). Your progress is preserved — ter
 ```
 your-curriculum/
 ├── CURRICULUM.md              # Master lesson plan (read-only reference)
-├── CURRICULUM-CONFIG.md       # Your personalized settings
+├── CURRICULUM-CONFIG.md       # Your personalized settings + learner profile + objectives
 ├── SESSION-STATE.md           # Progress tracker (auto-updated)
 ├── progress.md                # Daily learning log
 ├── COMMUNITIES.md             # Community engagement tracker
-├── portfolio/                 # Portfolio artifacts + analytics dashboard
+├── portfolio/                 # Portfolio artifacts + analytics dashboard + showcase
 ├── sessions/
 │   ├── summaries/             # Per-session receipt cards
+│   ├── digests/               # Weekly learning digests
 │   └── archive/               # Archived state history
 ├── assessments/               # Phase gate results
 ├── swot/                      # SWOT self-assessments

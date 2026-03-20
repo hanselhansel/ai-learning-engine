@@ -1,6 +1,6 @@
 # Setup Guide
 
-Step-by-step instructions to create your own AI-powered curriculum using the Adaptive Learning Engine v2.
+Step-by-step instructions to create your own AI-powered curriculum using the Adaptive Learning Engine v4.
 
 ---
 
@@ -34,7 +34,26 @@ Open `CURRICULUM-TEMPLATE.md` and fill it in:
 
 Save as `CURRICULUM.md`.
 
-## Step 3: Configure the Engine (NEW in v2)
+## Step 2.5: Set Your Learner Profile (NEW in v4)
+
+If you're using `/generate-curriculum`, this is handled automatically during the 8-question setup. If you're configuring manually:
+
+1. **Learner Profile**: In CURRICULUM-CONFIG.md, fill in the `Learner Profile` section:
+   - `age_group`: Your age range (this affects analogies and vocabulary)
+   - `experience_level`: How much you know about the topic
+   - `persona`: Auto-assigned, or manually set to Elementary / Teen / Adult Beginner / Professional / Expert
+
+2. **Learning Objective**: Fill in the `Learning Objective` section:
+   - `primary_goal`: Why you're learning this (career, academic, investing, hobby, teaching, building)
+   - `career_target`: Your specific end goal
+   - `perspective_lenses`: The angles you want threaded through every lesson
+   - `objective_statement`: One sentence summarizing your why
+
+3. **Placement Test** (optional): Run `/generate-curriculum` even for an existing curriculum — it will detect the existing files and offer to run just the placement test to auto-assign your persona.
+
+The engine adapts its teaching style (vocabulary, analogies, question difficulty, feedback tone) based on your persona, and threads your learning goal through every question and exercise.
+
+## Step 3: Configure the Engine
 
 Open `CURRICULUM-CONFIG-TEMPLATE.md` and customize:
 
@@ -106,7 +125,7 @@ Then open Claude and type: **"let's learn"**
 ```
 your-curriculum/
 ├── CURRICULUM.md              <- Your filled-in curriculum
-├── CURRICULUM-CONFIG.md       <- Engine configuration (NEW in v2)
+├── CURRICULUM-CONFIG.md       <- Engine configuration + learner profile + objectives
 ├── SESSION-STATE.md           <- Session state (auto-managed)
 ├── COMMUNITIES.md             <- Your community tracker
 ├── RESEARCH-REFERENCE.md      <- Verified data for your topic
@@ -114,8 +133,11 @@ your-curriculum/
 ├── skills/
 │   ├── learn/SKILL.md         <- Adaptive learning engine
 │   └── learn-end/SKILL.md    <- Session exit handler
-├── portfolio/                 <- Portfolio artifacts (NEW in v2)
-├── sessions/                  <- Session archives
+├── portfolio/                 <- Portfolio artifacts + analytics dashboard + showcase
+├── sessions/
+│   ├── summaries/             <- Per-session receipt cards
+│   ├── digests/               <- Weekly learning digests
+│   └── archive/               <- Archived state history
 ├── assessments/               <- Phase gate results
 ├── swot/                      <- Self-assessments
 ├── build-project/             <- Portfolio project files

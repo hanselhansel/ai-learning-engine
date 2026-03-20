@@ -63,3 +63,39 @@ Term: "World Model", ease=2.5, interval=3, correct_count=2
 - **Known**: correct_count >= 3 AND ease > 2.3
 - **Learning**: 1+ correct OR ease <= 2.3
 - **New**: never quizzed
+
+## Canonical Term IDs
+
+To enable cross-curriculum transfer, each term can have a `canonical_id` — a normalized identifier that's consistent across curricula.
+
+### Format
+```
+canonical_id = lowercase(field) + "/" + lowercase(term_with_underscores)
+```
+
+Examples:
+- "Transformer" in ML curriculum → `ml/transformer`
+- "Transformer" in Spatial AI curriculum → `ml/transformer` (same concept = same ID)
+- "RaaS" in Spatial AI → `robotics/raas`
+- "DCF" in Financial Modeling → `finance/dcf`
+
+### Cross-Curriculum Transfer Rules
+
+When a learner starts a NEW curriculum and has existing SM-2 data from another curriculum:
+
+1. **Match by canonical_id**: Find terms in the new curriculum that share canonical_ids with mastered terms in other curricula
+2. **Transfer criteria**: Only transfer if the source term has `status = Known` (correct_count >= 3 AND ease > 2.3)
+3. **Transfer values**: Set new term to `ease = 2.3, interval = 3, correct_count = 2, status = Learning`
+   - NOT directly to "Known" — the learner must verify understanding in the new context
+   - But they skip the "New" phase and start with credit
+4. **No transfer for**: Terms that are context-dependent (e.g., "foundation model" means different things in different fields)
+5. **Log**: Record all transfers in SESSION-STATE.md under "Transfer Credits"
+
+### Transfer Credit Log Format
+```
+### Transfer Credits
+
+| Term | Canonical ID | Source Curriculum | Source Status | Transferred Values |
+|------|-------------|-------------------|---------------|-------------------|
+| Transformer | ml/transformer | spatial-ai | Known (ease 2.8, cc 4) | ease 2.3, interval 3, cc 2 |
+```

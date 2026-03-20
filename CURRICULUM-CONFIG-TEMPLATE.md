@@ -34,6 +34,30 @@ Think: "What do I already know that's similar to what I'm learning?"
 - **[YOUR EXPERTISE 3]**: [e.g., "Managed a team of 10 — understands coordination, delegation"]
 - **[YOUR EXPERTISE 4]**: [e.g., "Built an e-commerce store — knows customer acquisition, unit economics"]
 
+## Learner Profile
+
+| Field | Value |
+|-------|-------|
+| **age_group** | [Elementary (8-12) / Teen (13-17) / Adult (18+)] |
+| **experience_level** | [Beginner / Intermediate / Professional / Expert] |
+| **domain_expertise** | [Brief description of relevant background, e.g., "5 years Python, MBA, built SaaS products"] |
+| **persona** | [Auto-assigned from placement test: Elementary / Teen / Adult Beginner / Professional / Expert] |
+
+The engine uses your persona to adjust teaching style, analogies, question difficulty, and feedback tone. See `references/learner-personas.md` for details on each persona.
+
+## Learning Objective
+
+| Field | Value |
+|-------|-------|
+| **primary_goal** | [Career/Job Prep / Academic / Investment/Business / Hobby / Teaching / Building] |
+| **secondary_goals** | [Optional: additional goals, e.g., "Investment/Business"] |
+| **goal_weights** | [e.g., "career: 0.6, investment: 0.4" — weights must sum to 1.0] |
+| **career_target** | [Specific outcome, e.g., "Get hired as ML engineer at a robotics company"] |
+| **perspective_lenses** | [Array of angles the engine threads through questions, e.g., "interview readiness, company landscape, valuation frameworks"] |
+| **objective_statement** | [One sentence: "I'm learning X so that I can Y"] |
+
+The engine threads your learning objective through every Socratic question, exercise, and quiz. Multi-objective blending distributes angles proportional to goal_weights. See `references/objective-threading.md`.
+
 ## Exercise Types (Portfolio Artifacts)
 
 Every drill produces a real artifact the learner can use. Rotate through these formats:

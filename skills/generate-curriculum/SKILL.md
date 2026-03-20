@@ -1,13 +1,13 @@
 ---
 name: generate-curriculum
-description: Generate a complete curriculum from scratch. Interactive skill that asks 5 questions about what you want to learn, then creates CURRICULUM.md, CURRICULUM-CONFIG.md, and SESSION-STATE.md ready for /learn. Use when starting a new learning journey. Triggers on "generate curriculum", "create curriculum", "new curriculum", "I want to learn", "set up a curriculum", or "/generate-curriculum".
+description: Generate a complete curriculum from scratch. Interactive skill that asks 8 questions about what you want to learn, sets your learner profile and learning objectives, runs a placement test, then creates CURRICULUM.md, CURRICULUM-CONFIG.md, and SESSION-STATE.md ready for /learn. Triggers on "generate curriculum", "create curriculum", "new curriculum", "I want to learn", "set up a curriculum", or "/generate-curriculum".
 ---
 
 # Curriculum Generator
 
-Creates a complete, ready-to-learn curriculum in 5 questions. Generates all files needed for the Adaptive Learning Engine v3.
+Creates a complete, ready-to-learn curriculum in 8 questions with persona profiling and placement test. Generates all files needed for the Adaptive Learning Engine v4.
 
-## Step 1: Gather Information (5 Questions)
+## Step 1: Gather Information (8 Questions)
 
 Ask these questions ONE AT A TIME. Wait for each answer before asking the next.
 
@@ -15,6 +15,35 @@ Ask these questions ONE AT A TIME. Wait for each answer before asking the next.
 "What do you want to learn? Be as specific or broad as you like."
 - Examples: "Machine learning for product managers", "Financial modeling", "Rust programming", "Product management for engineers"
 - Follow up: "What's the end goal? (career switch, add a skill, personal interest, certification prep)"
+
+### Q1.5: Who Are You?
+"Tell me about yourself — how old are you, what's your background? This helps me adjust how I teach. (I'll use different analogies for a teenager vs. a working professional.)"
+- Map age to age_group: 8-12 → Elementary, 13-17 → Teen, 18+ → Adult
+- Map background to experience_level: no prior knowledge → Beginner, some familiarity → Intermediate, works in related field → Professional, advanced/expert → Expert
+- Auto-assign persona: age_group + experience_level → persona (see learner-personas.md selection logic)
+
+### Q1.7: What Level?
+"How much do you already know about [topic]? Complete beginner, some familiarity, or you already work in this space?"
+- Refines persona assignment from Q1.5
+- If self-assessment differs from Q1.5 background → use the MORE specific signal
+- Sets initial difficulty in CURRICULUM-CONFIG.md compression settings
+
+### Q1.8: What's Your Goal?
+"WHY are you learning this? What's the end goal? Pick the closest match, or tell me in your own words:"
+- Career change / job prep
+- Academic (research, coursework)
+- Investment / business analysis
+- Hobby / personal curiosity
+- Teaching / mentoring others
+- Building / engineering something
+
+Map answer to:
+- primary_goal in CURRICULUM-CONFIG.md
+- Auto-generate perspective_lenses based on goal (see objective-threading.md)
+- Ask follow-up: "Any specific target? (e.g., 'Get hired at a robotics company in SF', 'Pass the ML certification')"
+- Map follow-up to career_target and objective_statement
+- Ask: "Any secondary goals? For example, learning for a career switch but also interested in investing in the space?"
+- If yes: capture secondary_goals and estimate goal_weights (e.g., career: 0.6, investment: 0.4)
 
 ### Q2: Timeline
 "How many weeks do you have? And how many hours per day can you dedicate?"
@@ -40,6 +69,28 @@ Ask these questions ONE AT A TIME. Wait for each answer before asking the next.
 "Are there any communities, books, courses, or people you already follow in this space?"
 - Use web search to find additional resources
 - Suggest 5-8 relevant communities (Reddit, Discord, Slack, Twitter/X accounts)
+
+### Placement Test (3 Questions)
+Read `references/placement-test.md` (from the learn skill directory at `skills/learn/references/placement-test.md`).
+
+Generate 3 topic-specific diagnostic questions at Easy/Medium/Hard levels.
+Ask them one at a time. Score responses per the rubric in placement-test.md.
+Auto-assign or confirm persona based on results.
+
+If results contradict Q1.5/Q1.7 self-assessment → use placement test result (it's behavioral, not self-reported).
+If results are inconclusive → default to Adult Beginner, flag for Session 1 refinement.
+
+### Tone Preview
+After persona assignment, display:
+
+"Based on your answers, I'll teach at a **[PERSONA]** level:
+- [1-sentence description from learner-personas.md]
+- Example question: [sample Socratic question for this persona]
+- Example exercise: [sample exercise type]
+
+Does this feel right? You can always adjust later in your CURRICULUM-CONFIG.md."
+
+If the learner wants to adjust → update persona immediately.
 
 ## Step 2: Research (Web Search)
 
@@ -93,11 +144,13 @@ Save to the curriculum directory as CURRICULUM.md.
 
 Fill the config template with the learner's answers:
 - curriculum_name, paths, target_sessions
+- learner_profile section with age_group, experience_level, domain_expertise, persona (from Q1.5 + Q1.7 + placement test)
+- learning_objective section with primary_goal, secondary_goals, goal_weights, career_target, perspective_lenses, objective_statement (from Q1.8)
 - learner_bridges (from Q3)
 - exercise_types (from Q4, mapped to specific formats)
 - mastery_thresholds (default: 70% Phase 1, 80% Phase 2+)
 - flex_session_defaults (standard defaults)
-- compression_settings (standard defaults)
+- compression_settings (standard defaults, adjusted by Q1.7 level)
 - tone (inferred from conversation or ask)
 - community_engagement_phases
 
@@ -105,7 +158,7 @@ Save as CURRICULUM-CONFIG.md.
 
 ## Step 5: Generate SESSION-STATE.md
 
-Create a fresh v3 state file:
+Create a fresh v4 state file:
 - All position fields initialized to Phase 1, Day 1
 - Empty tracker tables
 - Streak: 0
@@ -130,6 +183,8 @@ Display to the learner:
 CURRICULUM GENERATED
 
 Topic: [topic]
+Profile: [PERSONA] level
+Goal: [primary_goal] — [career_target]
 Timeline: [X] weeks ([Y] sessions)
 Phases: Foundations > Depth > Building > Portfolio
 
@@ -145,6 +200,8 @@ To start learning, type: /learn
 
 ## Key Rules
 
+- **Persona first.** Profile the learner before generating content. The persona affects vocabulary, analogies, and exercise types throughout the curriculum.
+- **Placement test validates.** Self-assessment (Q1.5, Q1.7) is a starting point. The placement test (3 questions) is the tiebreaker.
 - **Web search is mandatory.** Every curriculum must include current, real data.
 - **Be specific.** Don't generate vague topics like "Advanced concepts." Name specific papers, tools, companies.
 - **Realistic scope.** A 4-week curriculum should have ~20 sessions, not 50. Adjust depth to fit timeline.
