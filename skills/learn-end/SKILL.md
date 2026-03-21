@@ -120,10 +120,66 @@ SESSION SAVED
 - Progress: [X]% complete
 ```
 
-## Step 10: Git Commit + Push
+## Step 10: Sync Learning Status to identity.md
+
+Update the X Content Flywheel's identity file so the posting system knows the current curriculum state.
+
+### 10a. Read identity.md
+
+Read `x-thought-leadership/config/identity.md`. Locate the `## Learning Status (auto-updated by curriculum system)` section.
+
+### 10b. Read SESSION-STATE.md
+
+Read the SESSION-STATE.md file (path from CURRICULUM-CONFIG.md) to get:
+- Current day number
+- Current topic/title
+- Current phase and week
+- Sessions completed count
+
+### 10c. Update Learning Status section
+
+Replace the entire "Learning Status" section content with fresh values:
+
+```markdown
+## Learning Status (auto-updated by curriculum system)
+- Last lesson: Day [N] ([TODAY_DATE]) -- "[topic title]"
+- Curriculum status: FRESH (lesson today)
+- Sessions completed: [N] / ~50
+- Current phase: [Phase X Name], [Week Y]
+- Rule: If FRESH (today/yesterday), use curriculum topic normally for posts
+- Rule: If STALE (2-7 days since last session), can reference as "something I learned recently" but not fresh
+- Rule: If DORMANT (>7 days since last session), skip curriculum-themed posts entirely
+- Pillar rebalance when DORMANT: Market Signal 55%, Market Thesis 35%, Learning in Public 10% (organic only)
+```
+
+**Field mapping:**
+- `[N]` (day) = current day from SESSION-STATE.md
+- `[TODAY_DATE]` = today's date in YYYY-MM-DD format
+- `"[topic title]"` = the topic/title for the current day from SESSION-STATE.md or the curriculum
+- `Curriculum status` = always `FRESH (lesson today)` since this runs at session end
+- `Sessions completed` = from SESSION-STATE.md
+- `Current phase` = from SESSION-STATE.md
+
+If any key insight was captured from Step 3 (Quick Reflect), append it:
+
+```markdown
+- Key insight from last session: "[insight text, max 100 chars]"
+```
+
+### 10d. Write identity.md
+
+Write the updated identity.md back. Only the Learning Status section should change; all other sections must remain untouched.
+
+### 10e. Log sync
+
+Print: `Identity sync: Updated x-thought-leadership/config/identity.md Learning Status (Day [N], FRESH)`
+
+---
+
+## Step 11: Git Commit + Push
 
 ```
-git add [curriculum_dir from config]
+git add [curriculum_dir from config] x-thought-leadership/config/identity.md
 git commit -m "Curriculum progress: Day X [complete/partial] ([Mode]) - [topic]"
 git push
 ```
@@ -134,5 +190,6 @@ git push
 - **Never advance on partial.** This prevents gaps in learning.
 - **Partial still counts for streak.** Opening a session and doing some work maintains the streak.
 - **Always set resume flags.** The learn skill must know exactly where to pick up.
-- **Always commit.** No progress should be lost.
+- **Always sync identity.md.** Step 10 keeps the X flywheel's curriculum awareness in sync.
+- **Always commit.** No progress should be lost. Include identity.md in the commit.
 - **Mode-aware.** A "partial" Micro (2/3 blocks done) is different from a "partial" Deep (5/14 blocks done). Be specific about what was completed.
