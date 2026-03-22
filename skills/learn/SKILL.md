@@ -35,6 +35,53 @@ Read the `state_file` (SESSION-STATE.md). This is the **single source of truth**
 
 **CHECKPOINT**: After validation, write a checkpoint note to progress.md ("Session started, state valid").
 
+## Step 2.5: Pre-Session Mastery Gate
+
+**Fires in Standard, Deep, Synthesis, and Quick modes only. Skip entirely for Micro mode.**
+
+After loading and validating SESSION-STATE.md, check the Day Mastery Status table before loading new curriculum content.
+
+### Gate Check
+1. Read the Day Mastery Status table from SESSION-STATE.md
+2. Derive **Pending Verification**: days where Content Delivered is set but Mastery Verified = NO
+3. Derive **Current Verified Day**: highest Day number where Mastery Verified = YES
+4. Read `CURRICULUM-CONFIG.md` → get mastery_threshold for the PENDING DAY’s phase (not the current phase)
+
+### No Pending Days
+If Pending Verification is empty → no gate. Proceed to Step 3 (Load Curriculum) normally.
+
+### 1 Pending Day
+- Announce: "Day X ([topic]) needs verification before we continue. Let’s do a quick quiz."
+- Run SR Quiz using terms from the SM-2 tracker for that day
+  - Standard/Deep/Synthesis: 10 questions
+  - Quick: 5 questions (abbreviated)
+- **If no SM-2 terms exist for the pending day**: auto-mark as verified with note "No terms to quiz — auto-verified." Log the gap. Continue.
+- Score using the PENDING DAY’s phase threshold (e.g., Phase 1 = 70%, Phase 2 = 80%)
+- **Score ≥ threshold**: Mark Mastery Verified = YES, set Verified Date = today. Log: "Pre-session gate: PASSED Day X [score]". Continue to Step 3.
+- **Score < threshold (attempt 1)**: Run 10-min remediation drill on failed terms. Re-quiz failed terms only.
+  - If pass → mark verified, continue
+  - If fail (attempt 2) → **ESCAPE VALVE**: Mark Mastery Verified = YES, Weak Flag = YES. Set SM-2 interval to 1 for failed terms. Log: "Pre-session gate: ESCAPED Day X [score] — [terms] flagged weak." Continue to Step 3.
+
+### 2+ Pending Days (Auto-Recovery)
+- Announce: "You have N unverified days. Here’s a catch-up plan: [list days + topics]"
+- Run combined SR Quiz: 2 questions per pending day, sourced from SM-2 tracker
+- **Score EACH DAY INDIVIDUALLY** (not aggregate):
+  - Each day passes only if its own questions score ≥ that day’s phase threshold
+  - Each day is graded separately within the combined quiz
+- For each **passing day**: Mark Mastery Verified = YES, set Verified Date
+- For each **failing day**:
+  - Run targeted remediation drill on that day’s weak terms
+  - Re-quiz that day’s terms only
+  - If still fails → ESCAPE VALVE: Mark Weak Flag = YES, advance anyway
+- After recovery: Log results, continue to Step 3 with the next new day’s content
+
+### Post-Session Mastery Update (end of session, BEFORE day advancement)
+At the END of the session (before advancing Current Day), update the Day Mastery Status table:
+- **Live session with SR Quiz ≥ threshold** → Add row: Mastery Verified = YES
+- **Live session with SR Quiz < threshold (after 2 attempts)** → Add row: Weak Flag = YES, Mastery Verified = YES
+- **Async session** → Add row: Content Delivered = today, Mastery Verified = NO. NEVER set Mastery Verified for async sessions.
+- Day advancement: Set Current Day = Current Verified Day + 1 (derived from table)
+
 ## Step 3: Load Curriculum
 
 Read `curriculum_file` (CURRICULUM.md). Find the section matching "Next Session Plan."

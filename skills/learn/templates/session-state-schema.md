@@ -121,7 +121,25 @@ Outreach metrics.
 
 **Archive rule:** Keep last 10 entries. Older → `sessions/archive/state-history.md`
 
-### 16. Flags for Next Session
+### 16. Day Mastery Status Table
+
+Single source of truth for mastery-based progression.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| Day | integer | Curriculum day number |
+| Phase | integer | Which phase this day belongs to (for threshold lookup) |
+| Content Delivered | date | When lesson content was generated/delivered |
+| SR Quiz Score | string | Score from SR Quiz (or "N/A" for first day, "—" if not yet quizzed) |
+| Mastery Verified | YES/NO | Whether the learner demonstrated mastery in a live session |
+| Weak Flag | YES/NO | If true, learner failed gate twice and was advanced via escape valve |
+| Verified Date | date | When mastery was verified (or "—" if not yet) |
+
+### Derived Fields (NOT stored — computed at read time)
+- **Pending Verification**: Days where Content Delivered is set but Mastery Verified = NO
+- **Current Verified Day**: Highest Day where Mastery Verified = YES
+
+### 17. Flags for Next Session
 Checklist of items to surface at next session open.
 
 ## Archive Rules

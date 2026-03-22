@@ -122,6 +122,13 @@ Terms are reviewed using spaced repetition. `next_review` determines when a term
 | Meetings booked | 0 |
 | Meetings completed | 0 |
 
+## Day Mastery Status
+
+> **Single source of truth for mastery-based progression.** Pending Verification and Current Verified Day are DERIVED from this table.
+
+| Day | Phase | Content Delivered | SR Quiz Score | Mastery Verified | Weak Flag | Verified Date |
+|-----|-------|-------------------|---------------|------------------|-----------|---------------|
+
 ## Session Log (Last 10)
 
 | Date | Session | Mode | Curriculum Day | Duration | Key Topics | Notes |

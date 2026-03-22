@@ -135,6 +135,19 @@ For Deep Dive mode, occasionally swap portfolio exercise for:
 
 Rotation: every 4th Deep session, use a variety format instead of standard portfolio exercise.
 
+## Mastery Gate Configuration
+
+| Field | Value |
+|-------|-------|
+| **mastery_gate_enabled** | true |
+| **gate_modes** | Standard, Deep, Synthesis, Quick |
+| **quick_mode_questions** | 5 |
+| **standard_mode_questions** | 10 |
+| **escape_valve_attempts** | 2 |
+| **recovery_questions_per_day** | 2 |
+
+Thresholds are read from the `Mastery Thresholds` table in this config.
+
 ## Articulation Scoring
 
 | Setting | Value |

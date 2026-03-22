@@ -79,6 +79,29 @@ Read current state_file, then update:
 | Flags for Next Session | Add resume point if partial + any follow-up items |
 | Profile Refinement Log | Update with any persona/objective observations from this session |
 
+### Mastery-Aware Exit
+
+When the learner exits mid-session (/learn-end), handle mastery state based on what happened:
+
+1. **SR Quiz was completed and scored ≥ phase threshold**: 
+   - Mark Mastery Verified = YES for the day being quizzed in the Day Mastery Status table
+   - Set Verified Date = today
+   - Advance is safe
+
+2. **SR Quiz was completed but scored < threshold (after remediation)**:
+   - Mark Weak Flag = YES, Mastery Verified = YES (escape valve)
+   - Set SM-2 interval to 1 for weak terms
+   - Advance is safe
+
+3. **SR Quiz was NOT yet taken** (learner exits before gate completes):
+   - Do NOT advance Current Day
+   - The day stays in Pending Verification (derived from table — Mastery Verified = NO)
+   - Log: "Early exit — mastery gate incomplete, day stays pending"
+
+4. **Mid-gate exit** (learner exits during remediation or re-quiz):
+   - Treat as "quiz not taken" — do NOT advance
+   - The day stays pending for next session
+
 ## Step 6: Generate Partial Summary Card
 
 Read `templates/session-summary-card.md` from the learn skill directory (`skills/spatial-ai-learn/templates/` or `.claude/skills/learn/templates/`).
